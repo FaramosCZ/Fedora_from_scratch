@@ -64,9 +64,13 @@ source ./disk_partitioning.conf || exit
 # PREPARE THE DISK LAYOUT
 
 # Make sure all partitions are unmounted
+swapoff -a || :
+swapoff "$DEVICE"* || :
 umount -l "$DEVICE"* || :
 umount -R -c "$MOUNTPOINT"/* || :
-swapoff "$DEVICE"* || :
+
+sync
+sleep 5;
 
 # Create desired layout of the partition tables
 [ "$PARTITIONING_STANDARD" = "GPT" ] && PARTITIONING_STANDARD_LABEL="gpt" || PARTITIONING_STANDARD_LABEL="mbr" && \
