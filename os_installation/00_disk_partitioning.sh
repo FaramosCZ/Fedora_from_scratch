@@ -70,12 +70,13 @@ umount -l "$DEVICE"* || :
 umount -R -c "$MOUNTPOINT"/* || :
 
 sync
-sleep 5;
+sleep 3;
 
 # Create desired layout of the partition tables
 [ "$PARTITIONING_STANDARD" = "GPT" ] && PARTITIONING_STANDARD_LABEL="gpt" || PARTITIONING_STANDARD_LABEL="mbr" && \
 echo "label: $PARTITIONING_STANDARD_LABEL" | sfdisk "$DEVICE" || exit
 
+sleep 1;
 
 #----------------------------------------
 # CREATE PARTITITONS
@@ -112,7 +113,11 @@ for i in "${!PARTITION_FILESYSTEMS[@]}"; do
   if [ -z "${PARTITION_LABELS[i]}" ] ; then
     echo a | mkfs."${PARTITION_FILESYSTEMS[i]}" "$DEVICE"$((i+MKFS_OFFSET)) || exit
   else
-    echo a | mkfs."${PARTITION_FILESYSTEMS[i]}" -L "${PARTITION_LABELS[i]}" "$DEVICE"$((i+MKFS_OFFSET)) || exit
+    # Different MKFS variants has different argument for the lablel assigment
+    case "${PARTITION_FILESYSTEMS[i]}" in
+      vfat|fat) echo a | mkfs."${PARTITION_FILESYSTEMS[i]}" -n "${PARTITION_LABELS[i]}" "$DEVICE"$((i+MKFS_OFFSET)) || exit ;;
+      *)        echo a | mkfs."${PARTITION_FILESYSTEMS[i]}" -L "${PARTITION_LABELS[i]}" "$DEVICE"$((i+MKFS_OFFSET)) || exit ;;
+    esac
   fi
 done
 

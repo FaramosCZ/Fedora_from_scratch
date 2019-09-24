@@ -26,6 +26,8 @@ fi
 if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
   PARTITION_FILESYSTEMS[0]="vfat"
   PARTITION_MOUNTPOINTS[0]="/boot/efi/"
+  # Use label for the portable installations (won't depend on /dev/sd* path hardcoded into /etc/fstab)
+  PARTITION_LABELS[0]="EFI"
 fi
 
 #----------------------------------------
