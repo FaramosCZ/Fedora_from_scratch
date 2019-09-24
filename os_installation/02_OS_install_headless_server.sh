@@ -77,6 +77,10 @@ dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --r
 #       If we would like to use the Host system repo instead, we would need to use "--setopt=reposdir=..." to force repos on Host to be priotitized.
 dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck install $CUSTOM_CORE_PACKAGES
 
+# Make sure the kernel was installed too
+# MAYBE BUG: sometimes (e.g. when installing Fedora Beta release), the kernel won't install ... why? That's mystery. Let's make sure we have it.
+dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck install $CUSTOM_KERNEL_PACKAGES
+
 # Copy network resolution file into the mounted system
 cp /etc/resolv.conf "$MOUNTPOINT"/etc/
 

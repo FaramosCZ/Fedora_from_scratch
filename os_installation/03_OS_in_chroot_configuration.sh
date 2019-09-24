@@ -101,8 +101,10 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     for service in "${SERVICES_TO_ENABLE[@]}"; do systemctl enable "\$service"; done
 
 
-    # Update to install and apply latest kernel
-    dnf update -y $DNF_ARGS --nogpgcheck
+    # Update all packages to the latest version
+    dnf update -y $DNF_ARGS
+    # Make sure the kernel was installed; reinstall it to re-generate the GRUB boot entries
+    dnf reinstall -y $DNF_ARGS $CUSTOM_KERNEL_PACKAGES
 
 EOF
 
