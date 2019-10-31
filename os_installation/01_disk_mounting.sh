@@ -113,9 +113,6 @@ done
 # Mount before installing anything since many scriptlets assume existence of /dev/*
 mkdir "$MOUNTPOINT"/sys "$MOUNTPOINT"/proc "$MOUNTPOINT"/dev || :
 
-# To fix the bug in SELinux labeling rhbz#1467103 rhbz#1714026
-chcon --reference=/dev "$MOUNTPOINT"/dev || exit
-
 mount -t sysfs none "$MOUNTPOINT"/sys || exit
 mount -t proc  none "$MOUNTPOINT"/proc || exit
 mount -o bind  /dev "$MOUNTPOINT"/dev || exit
@@ -139,7 +136,9 @@ popd
 #     3) So far can prepare one disk only.
 #        If this extended functionality would be wanted, new array has to be added, holding the appropriate disk / device for each parititon.
 #
-#     4) There's a bug in automatic SELinux relabeling:
-#        rhbz#1467103 rhbz#1714026
+#     4) There was a bug on Fedora in automatic SELinux relabeling:
+#        rhbz#1467103 ( which then lead to rhbz#1714026 )
+#        You had to fix the context of the empty guest dev/ directory, before the host content is mounted into it
+#        chcon --reference=/dev "$MOUNTPOINT"/dev || exit
 #
 #########################################
