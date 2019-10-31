@@ -18,18 +18,18 @@
 #     To produce simple, well-commented, easily understandable code, which could be highly reusable and hopefully portable.
 #
 # DESCRIPTION:
-#     Using 'sfdisk', beacuse it is "script-firendly"
+#     Using 'sfdisk', because it is "script-friendly"
 #     Using 'mkfs.*' to create the underlying FS right away.
 #
-# RUNTIME NOTES:
-#     Since we are dealing with disk partitioning, you have to run this script with elevated priviledges. (e.g. root)
+# RUN-TIME NOTES:
+#     Since we are dealing with disk partitioning, you have to run this script with elevated privileges. (e.g. root)
 #     Always run only after making sure, the data on the attached disks are disposable.
 #
 #     This script shouldn't be modified if you *really* don't know what you are doing.
-#     For USER CONFIGURATION, use the *.conf files instead, in the same directory. (disk_parititoning.conf)
+#     For USER CONFIGURATION, use the *.conf files instead, in the same directory. (disk_partitioning.conf)
 #
 # AUTHOR NOTES:
-#     The script was writtent to run as a part of custom Fedora 30 installation. So I'm assuming Fedora environment (/bin/bash; DNF; ...)
+#     The script was written to run as a part of custom Fedora 30 installation. So I'm assuming Fedora environment (/bin/bash; DNF; ...)
 #
 #########################################
 
@@ -79,7 +79,7 @@ echo "label: $PARTITIONING_STANDARD_LABEL" | sfdisk "$DEVICE" || exit
 sleep 1;
 
 #----------------------------------------
-# CREATE PARTITITONS
+# CREATE PARTITIONS
 
 # First of all, add partitions requested by the USER CONFIGURATION
 for i in "${!PARTITION_SIZES[@]}"; do
@@ -113,7 +113,7 @@ for i in "${!PARTITION_FILESYSTEMS[@]}"; do
   if [ -z "${PARTITION_LABELS[i]}" ] ; then
     echo a | mkfs."${PARTITION_FILESYSTEMS[i]}" "$DEVICE"$((i+MKFS_OFFSET)) || exit
   else
-    # Different MKFS variants has different argument for the lablel assigment
+    # Different MKFS variants has different argument for the label assignment
     case "${PARTITION_FILESYSTEMS[i]}" in
       vfat|fat) echo a | mkfs."${PARTITION_FILESYSTEMS[i]}" -n "${PARTITION_LABELS[i]}" "$DEVICE"$((i+MKFS_OFFSET)) || exit ;;
       *)        echo a | mkfs."${PARTITION_FILESYSTEMS[i]}" -L "${PARTITION_LABELS[i]}" "$DEVICE"$((i+MKFS_OFFSET)) || exit ;;
@@ -134,11 +134,11 @@ popd
 #     1) This script was tested ONLY on x86_64 architecture. It should be architecture independent, but without proper testing, who knows? :)
 #
 #     2) This script was tested running ONLY from official Fedora Cinnamon installer images from getfedora.org.
-#        Instead of running Anaconda, yoou run this set of scripts.
-#        Thus assuming software standardly available in such images.
+#        Instead of running Anaconda, you run this set of scripts.
+#        Thus assuming software by default available in such images.
 #
 #     3) So far can prepare one disk only.
-#        If this extended functionality would be wanted, new array has to be added, holding the appropriate disk / device for each parititon.
+#        If this extended functionality would be wanted, new array has to be added, holding the appropriate disk / device for each partition.
 #
 #     4) Sometimes the script will fail on disk manipulation with various errors, like "resource busy" etc.
 #        Usually re-run will solve those errors. However if you see after 3rd execution still the same error, check your system or this code.

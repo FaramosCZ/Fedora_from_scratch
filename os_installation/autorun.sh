@@ -18,7 +18,7 @@ relative_path=$( readlink -f "$BASH_SOURCE" )
 pushd "${relative_path%/*}" || exit
 
 #----------------------------------------
-# RUN ALL THE SCRIPTS IN THIS DIRECTOY IN THE CORRECT ORDER
+# RUN ALL THE SCRIPTS IN THIS DIRECTORY IN THE CORRECT ORDER
 
 sh 00* && sh 01* && sh 02* && sh 03*
 

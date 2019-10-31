@@ -12,7 +12,7 @@
 #
 # PURPOSE:
 #     This script is part of a bigger project.
-#     This particular script solves mounting freshly paritioned disk before you install a new OS.
+#     This particular script solves mounting freshly partitioned disk before you install a new OS.
 #
 # GOALS:
 #     To produce simple, well-commented, easily understandable code, which could be highly reusable and hopefully portable.
@@ -20,15 +20,15 @@
 # DESCRIPTION:
 #     Configures the core system inside chroot before the first startup.
 #
-# RUNTIME NOTES:
-#     You have to run this script with elevated priviledges. (e.g. root)
+# RUN-TIME NOTES:
+#     You have to run this script with elevated privileges. (e.g. root)
 #     Always run only after making sure, the data on the attached disks are disposable.
 #
 #     This script shouldn't be modified if you *really* don't know what you are doing.
-#     For USER CONFIGURATION, use the *.conf files instead, in the same directory. (disk_parititoning.conf)
+#     For USER CONFIGURATION, use the *.conf files instead, in the same directory. (disk_partitioning.conf)
 #
 # AUTHOR NOTES:
-#     The script was writtent to run as a part of custom Fedora 30 installation. So I'm assuming Fedora environment (/bin/bash; DNF; ...)
+#     The script was written to run as a part of custom Fedora 30 installation. So I'm assuming Fedora environment (/bin/bash; DNF; ...)
 #
 #########################################
 
@@ -131,8 +131,8 @@ popd
 #     1) This script was tested ONLY on x86_64 architecture. It should be architecture independent, but without proper testing, who knows? :)
 #
 #     2) This script was tested running ONLY from official Fedora Cinnamon installer images from getfedora.org.
-#        Instead of running Anaconda, yoou run this set of scripts.
-#        Thus assuming software standardly available in such images.
+#        Instead of running Anaconda, you run this set of scripts.
+#        Thus assuming software by default available in such images.
 #
 #     3) There's bug preventing any password manipulation in chroot or in a system where systemd is not running
 #        rhbz#1645118

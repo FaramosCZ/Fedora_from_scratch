@@ -12,7 +12,7 @@
 #
 # PURPOSE:
 #     This script is part of a bigger project.
-#     This particular script solves mounting freshly paritioned disk before you install a new OS.
+#     This particular script solves mounting freshly partitioned disk before you install a new OS.
 #
 # GOALS:
 #     To produce simple, well-commented, easily understandable code, which could be highly reusable and hopefully portable.
@@ -20,16 +20,16 @@
 # DESCRIPTION:
 #     Clears selected mountpoint and mounts the disks into it in a correct order
 #
-# RUNTIME NOTES:
+# RUN-TIME NOTES:
 #     This script will call 'rm -rf' onto the mountpoint. Make sure there aren't any data you may miss.
-#     You have to run this script with elevated priviledges. (e.g. root)
+#     You have to run this script with elevated privileges. (e.g. root)
 #     Always run only after making sure, the data on the attached disks are disposable.
 #
 #     This script shouldn't be modified if you *really* don't know what you are doing.
-#     For USER CONFIGURATION, use the *.conf files instead, in the same directory. (disk_parititoning.conf)
+#     For USER CONFIGURATION, use the *.conf files instead, in the same directory. (disk_partitioning.conf)
 #
 # AUTHOR NOTES:
-#     The script was writtent to run as a part of custom Fedora 30 installation. So I'm assuming Fedora environment (/bin/bash; DNF; ...)
+#     The script was written to run as a part of custom Fedora 30 installation. So I'm assuming Fedora environment (/bin/bash; DNF; ...)
 #
 #########################################
 
@@ -92,7 +92,7 @@ while [ $COUNTER -le "$PARTITION_MOUNTPOINTS_SLASH_COUNT_HIGHEST" ] ; do
     if [ $COUNTER -eq ${PARTITION_MOUNTPOINTS_SLASH_COUNT[i]} ] ; then
       mkdir -p "$MOUNTPOINT${PARTITION_MOUNTPOINTS[i]}" || exit
       mount "$DEVICE"$((i+MKFS_OFFSET)) "$MOUNTPOINT${PARTITION_MOUNTPOINTS[i]}" || exit
-      # Also prepare /etc/fstab entry rightaway
+      # Also prepare /etc/fstab entry right away
       if [ -z "${PARTITION_LABELS[i]}" ] ; then
         echo -e -n "$DEVICE"$((i+MKFS_OFFSET))"\t" >> .tmp_fstab || exit
       else
@@ -109,8 +109,8 @@ done
 
 #----------------------------------------
 
-# Mount the rest of the directiories from the running system
-# Mount before installing anything since many scriplets assume existence of /dev/*
+# Mount the rest of the directories from the running system
+# Mount before installing anything since many scriptlets assume existence of /dev/*
 mkdir "$MOUNTPOINT"/sys "$MOUNTPOINT"/proc "$MOUNTPOINT"/dev || :
 
 # To fix the bug in SELinux labeling rhbz#1467103 rhbz#1714026
@@ -133,8 +133,8 @@ popd
 #     1) This script was tested ONLY on x86_64 architecture. It should be architecture independent, but without proper testing, who knows? :)
 #
 #     2) This script was tested running ONLY from official Fedora Cinnamon installer images from getfedora.org.
-#        Instead of running Anaconda, yoou run this set of scripts.
-#        Thus assuming software standardly available in such images.
+#        Instead of running Anaconda, you run this set of scripts.
+#        Thus assuming software by default available in such images.
 #
 #     3) So far can prepare one disk only.
 #        If this extended functionality would be wanted, new array has to be added, holding the appropriate disk / device for each parititon.
