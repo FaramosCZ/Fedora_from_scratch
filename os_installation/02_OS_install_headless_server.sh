@@ -72,8 +72,8 @@ dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --r
 # MAYBE BUG: sometimes (e.g. when installing Fedora Beta release), the kernel won't install ... why? That's mystery. Let's make sure we have it.
 dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-local" --setopt=reposdir=/etc/yum.repos.d/ install $CUSTOM_KERNEL_PACKAGES || exit
 
-# Copy network resolution file into the mounted system
-cp /etc/resolv.conf "$MOUNTPOINT"/etc/
+# Prepare network resolution file in the mounted system with the Google public DNS
+echo "nameserver 8.8.8.8" > "$MOUNTPOINT"/etc/resolv.conf
 
 # Set up device name
 echo "$DEVICE_NAME" > "$MOUNTPOINT"/etc/hostname
