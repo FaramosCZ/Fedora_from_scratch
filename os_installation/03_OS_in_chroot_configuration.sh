@@ -63,9 +63,9 @@ source ./system_installation.conf || exit
 
 
     if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
-      dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-custom" --enablerepo="fedora-local" --setopt=reposdir=/etc/yum.repos.d/ install grub2-efi-x64 shim || exit
+      dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-local" --setopt=reposdir=/etc/yum.repos.d/ install grub2-efi-x64 shim || exit
     else
-      dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-custom" --enablerepo="fedora-local" --setopt=reposdir=/etc/yum.repos.d/ install grub2-pc-modules || exit
+      dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-local" --setopt=reposdir=/etc/yum.repos.d/ install grub2-pc-modules || exit
     fi
 
 # Chroot inside
@@ -114,7 +114,7 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
 EOF
 
 # Make sure the kernel was installed; reinstall it to re-generate the GRUB boot entries
-dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-custom" --enablerepo="fedora-local" --setopt=reposdir=/etc/yum.repos.d/ reinstall $CUSTOM_KERNEL_PACKAGES || exit
+dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-local" --setopt=reposdir=/etc/yum.repos.d/ reinstall $CUSTOM_KERNEL_PACKAGES || exit
 
 
 # Add fstab entries prepared by previous script

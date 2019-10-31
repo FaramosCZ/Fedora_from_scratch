@@ -41,10 +41,22 @@
 # Use set -x to print the shell input lines after expansion
 set -vx
 
+# Don't assume the OS version we are currently in. Prepare custom repository to get packages from.
+# Use also a local repository, with already dowloaded packages, to not waste the network resources, if possible
+# Note, that when using ONLY offline reources, the DNF has no idea what "groupinstall core" means
+echo "\
+[fedora-local]
+name=fedora-local
+enabled=1
+gpgcheck=0
+baseurl=file:///run/media/liveuser/DATA_8/RPMS/
+priority=1" \
+ > /etc/yum.repos.d/fedora-local.repo
+
 # Make sure we have all of the required software
 #   All of the 'sfdisk', 'mkfs' and 'mount' utilities lives in the 'util-linux' package
 #   The 'readlink' utility is in the 'coreutils' package
-dnf install -y util-linux coreutils || exit
+dnf install -y --repo=fedora-local util-linux coreutils || exit
 
 
 #----------------------------------------

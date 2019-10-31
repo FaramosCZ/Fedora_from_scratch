@@ -44,7 +44,7 @@ set -vx
 # Make sure we have all of the required software
 #   'mount' utility lives in the 'util-linux' package
 #   'chcon' utility lives in the 'coreutils' package
-dnf install -y util-linux coreutils || exit
+dnf install -y --repo=fedora-local util-linux coreutils || exit
 
 
 #----------------------------------------

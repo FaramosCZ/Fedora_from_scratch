@@ -60,39 +60,17 @@ source ./system_installation.conf || exit
 # Check there's valid space to install into
 [ ! -d "$MOUNTPOINT" ] && exit 1
 
-# Don't assume the OS version we are currently in. Prepare custom repository to get packages from.
-echo "\
-[fedora-custom]
-name=fedora-custom
-enabled=1
-gpgcheck=0
-metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-$OS&arch=x86_64
-priority=10" \
- > /etc/yum.repos.d/fedora-custom.repo
-
-# Use also a local repository, with already dowloaded packages, to not waste the network resources, if possible
-# Note, that when using ONLY offline reources, the DNF has no idea what "groupinstall core" means
-echo "\
-[fedora-local]
-name=fedora-local
-enabled=1
-gpgcheck=0
-baseurl=file:///run/media/liveuser/DATA_8/RPMS/
-priority=1" \
- > /etc/yum.repos.d/fedora-local.repo
-
-
 # Install core software inside the mounted directory tree
-dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-custom" --enablerepo="fedora-local" groupinstall core || exit
+dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-local" groupinstall core || exit
 
 # Install the favourite software inside
 # NOTE: DNF will prioritize the configuration inside "--installroot", so we don't need to use our custom repo anymore.
 #       If we would like to use the Host system repo instead, we would need to use "--setopt=reposdir=..." to force repos on Host to be priotitized.
-dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-custom" --enablerepo="fedora-local" --setopt=reposdir=/etc/yum.repos.d/ install $CUSTOM_CORE_PACKAGES || exit
+dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-local" --setopt=reposdir=/etc/yum.repos.d/ install $CUSTOM_CORE_PACKAGES || exit
 
 # Make sure the kernel was installed too
 # MAYBE BUG: sometimes (e.g. when installing Fedora Beta release), the kernel won't install ... why? That's mystery. Let's make sure we have it.
-dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-custom" --enablerepo="fedora-local" --setopt=reposdir=/etc/yum.repos.d/ install $CUSTOM_KERNEL_PACKAGES || exit
+dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-local" --setopt=reposdir=/etc/yum.repos.d/ install $CUSTOM_KERNEL_PACKAGES || exit
 
 # Copy network resolution file into the mounted system
 cp /etc/resolv.conf "$MOUNTPOINT"/etc/
