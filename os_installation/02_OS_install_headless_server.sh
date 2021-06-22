@@ -82,7 +82,9 @@ dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck ins
 dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck install $CUSTOM_KERNEL_PACKAGES
 
 # Copy network resolution file into the mounted system
-cp /etc/resolv.conf "$MOUNTPOINT"/etc/
+
+cp -H --remove-destination /etc/resolv.conf "$MOUNTPOINT"/etc/
+cat "$MOUNTPOINT"/etc/resolv.conf
 
 # Set up device name
 echo "$DEVICE_NAME" > "$MOUNTPOINT"/etc/hostname
