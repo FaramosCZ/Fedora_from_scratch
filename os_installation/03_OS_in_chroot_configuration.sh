@@ -81,7 +81,7 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     touch /.autorelabel
 
 
-    echo "GRUB_TIMEOUT=1" >> /etc/default/grub
+    echo "GRUB_TIMEOUT=3" >> /etc/default/grub
     # Install GRUB (while in chroot)
     if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
       dnf install -y $DNF_ARGS grub2-efi-x64 shim || exit 1
@@ -102,9 +102,9 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
 
 
     # Update all packages to the latest version
-    dnf update -y $DNF_ARGS
+    #dnf update -y $DNF_ARGS
     # Make sure the kernel was installed; reinstall it to re-generate the GRUB boot entries
-    dnf reinstall -y $DNF_ARGS $CUSTOM_KERNEL_PACKAGES
+    dnf --comment="$OS reinstall kernel to re-generate GRUB boot entries" reinstall -y $DNF_ARGS $CUSTOM_KERNEL_PACKAGES
 
 EOF
 
