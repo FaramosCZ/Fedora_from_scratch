@@ -80,9 +80,10 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     # Tell SELinux to repair context to all files at first startup
     touch /.autorelabel
 
-
+    dnf install -y btrfs-progs
+    echo > /etc/default/grub
     echo "GRUB_TIMEOUT=1" >> /etc/default/grub
-    echo \"GRUB_CMDLINE_LINUX="intel_idle.max_cstate=3"\" >> /etc/default/grub
+    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"intel_idle.max_cstate=3\"" >> /etc/default/grub
     echo "GRUB_ENABLE_BLSCFG=true" >> /etc/default/grub
     # Install GRUB (while in chroot)
     if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
