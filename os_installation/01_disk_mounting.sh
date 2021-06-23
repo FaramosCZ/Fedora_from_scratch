@@ -100,6 +100,7 @@ while [ $COUNTER -le "$PARTITION_MOUNTPOINTS_SLASH_COUNT_HIGHEST" ] ; do
       fi
       echo -e -n "${PARTITION_MOUNTPOINTS[i]}\t${PARTITION_FILESYSTEMS[i]}\t" >> .tmp_fstab || exit
       echo -e "defaults\t1\t$COUNTER" >> .tmp_fstab || exit
+      bash
     fi
   done
 

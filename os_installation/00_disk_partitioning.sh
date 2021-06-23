@@ -116,6 +116,7 @@ for i in "${!PARTITION_FILESYSTEMS[@]}"; do
     # Different MKFS variants has different argument for the label assignment
     case "${PARTITION_FILESYSTEMS[i]}" in
       vfat|fat) echo a | mkfs."${PARTITION_FILESYSTEMS[i]}" -n "${PARTITION_LABELS[i]}" "$DEVICE"$((i+MKFS_OFFSET)) || exit ;;
+      btrfs)    echo a | mkfs."${PARTITION_FILESYSTEMS[i]}" -f -L "${PARTITION_LABELS[i]}" "$DEVICE"$((i+MKFS_OFFSET)) || exit ;;
       *)        echo a | mkfs."${PARTITION_FILESYSTEMS[i]}" -L "${PARTITION_LABELS[i]}" "$DEVICE"$((i+MKFS_OFFSET)) || exit ;;
     esac
   fi
