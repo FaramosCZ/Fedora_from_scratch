@@ -82,6 +82,8 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
 
 
     echo "GRUB_TIMEOUT=1" >> /etc/default/grub
+    echo \"GRUB_CMDLINE_LINUX="intel_idle.max_cstate=3"\" >> /etc/default/grub
+    echo "GRUB_ENABLE_BLSCFG=true" >> /etc/default/grub
     # Install GRUB (while in chroot)
     if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
       dnf install -y $DNF_ARGS grub2-efi-x64 shim || exit 1
@@ -91,7 +93,7 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
       grub2-install "$DEVICE" || exit 1
       grub2-mkconfig -o /boot/grub2/grub.cfg || exit 1
     fi
-    grub2-switch-to-blscfg || exit 1
+#    grub2-switch-to-blscfg || exit 1
 
 
     # Re-declare the array, since we jumped to chroot
