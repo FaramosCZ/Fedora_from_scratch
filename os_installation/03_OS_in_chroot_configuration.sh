@@ -83,11 +83,13 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     dnf install -y btrfs-progs
     echo > /etc/default/grub
     echo "GRUB_TIMEOUT=1" >> /etc/default/grub
-    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"intel_idle.max_cstate=3\"" >> /etc/default/grub
+    echo "GRUB_DISABLE_UUID=true" >> /etc/default/grub
+    echo "GRUB_OS_PROBER_SKIP_LIST=2021-04-23-17-49-20-00 8797133d-efc6-46d3-968a-0642aec9cdcc" >> /etc/default/grub
+    echo "GRUB_CMDLINE_LINUX=\"intel_idle.max_cstate=3\"" >> /etc/default/grub
     echo "GRUB_ENABLE_BLSCFG=true" >> /etc/default/grub
     # Install GRUB (while in chroot)
     if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
-      dnf install -y $DNF_ARGS grub2-efi-x64 shim || exit 1
+      dnf install -y $DNF_ARGS grub2-efi-x64 grub2-efi-x64-modules shim || exit 1
       grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg || exit 1
     else
       dnf install -y $DNF_ARGS grub2-pc-modules || exit 1
