@@ -70,16 +70,16 @@ metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-$OS&arch=x86_64"
  > /etc/yum.repos.d/fedora-custom.repo
 
 # Install core software inside the mounted directory tree
-dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-custom" groupinstall core
+dnf --comment="Install the DNF group @core" --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-custom" groupinstall core
 
 # Install the favourite software inside
 # NOTE: DNF will prioritize the configuration inside "--installroot", so we don't need to use our custom repo anymore.
 #       If we would like to use the Host system repo instead, we would need to use "--setopt=reposdir=..." to force repos on Host to be priotitized.
-dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck install $CUSTOM_CORE_PACKAGES
+dnf --comment="Install custom packages which I want to be part of the minimal installation" --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck install $CUSTOM_CORE_PACKAGES
 
 # Make sure the kernel was installed too
 # MAYBE BUG: sometimes (e.g. when installing Fedora Beta release), the kernel won't install ... why? That's mystery. Let's make sure we have it.
-dnf --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck install $CUSTOM_KERNEL_PACKAGES
+dnf --comment="Install kernel" --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck install $CUSTOM_KERNEL_PACKAGES
 
 # Copy network resolution file into the mounted system
 cp /etc/resolv.conf "$MOUNTPOINT"/etc/
