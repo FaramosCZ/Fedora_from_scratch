@@ -99,6 +99,10 @@ while [ $COUNTER -le "$PARTITION_MOUNTPOINTS_SLASH_COUNT_HIGHEST" ] ; do
         echo -e -n "LABEL=${PARTITION_LABELS[i]}\t" >> .tmp_fstab || exit
       fi
       echo -e -n "${PARTITION_MOUNTPOINTS[i]}\t${PARTITION_FILESYSTEMS[i]}\t" >> .tmp_fstab || exit
+      # NOTE:
+      #   In case of BTRFS, we want to set "subvol=<name_of_the_subvolume>" instead of "defaults".
+      #   We may also add other BTRFS mount arguments, like compression
+      #   We also want to set the numbers to "0  0" on a BTRFS volume
       echo -e "defaults\t1\t$COUNTER" >> .tmp_fstab || exit
       bash
     fi
