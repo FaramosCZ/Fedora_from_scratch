@@ -86,16 +86,41 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     echo "GRUB_DISABLE_UUID=true" >> /etc/default/grub
     echo "GRUB_CMDLINE_LINUX=\"intel_idle.max_cstate=3\"" >> /etc/default/grub
     echo "GRUB_ENABLE_BLSCFG=true" >> /etc/default/grub
+
     # Install GRUB (while in chroot)
     if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
       dnf --comment="Install GRUB" install -y $DNF_ARGS grub2-efi-x64 grub2-efi-x64-modules shim || exit 1
-      grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg || exit 1
     else
       dnf --comment="Install GRUB" install -y $DNF_ARGS grub2-pc-modules || exit 1
       grub2-install "$DEVICE" || exit 1
-      grub2-mkconfig -o /boot/grub2/grub.cfg || exit 1
     fi
-#    grub2-switch-to-blscfg || exit 1
+EOF
+
+
+
+# In case of EFI instalaltion, apply a clever hack, which will redirect the GRUB loader
+# from the "/boot/efi/EFI/fedora/grub.cfg" to the "/boot/grub2/gurb.cfg"
+if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
+  cp -f "./GRUB_BTRFS/EFI-grub.cfg" "$MOUNTPOINT/boot/efi/EFI/fedora/grub.cfg"
+fi
+
+# Disable the default GRUB configuration
+chmod -x "$MOUNTPOINT/etc/grub.d/*"
+# Insert the custom GRUB configuration
+cp -f "./GRUB_BTRFS/grub.cfg" "$MOUNTPOINT/etc/grub.d/custom-grub.cfg"
+chmod +x  "$MOUNTPOINT/etc/grub.d/custom-grub.cfg"
+
+
+
+# Switch to chroot again
+cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
+
+    # Use set again
+    set -vx
+
+
+    # Generate the GRUB config file
+    grub2-mkconfig -o /boot/grub2/grub.cfg || exit 1
 
 
     # Re-declare the array, since we jumped to chroot
