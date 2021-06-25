@@ -80,7 +80,7 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     # Tell SELinux to repair context to all files at first startup
     touch /.autorelabel
 
-    dnf install -y btrfs-progs
+    dnf --comment="Install BTRFS utilities" install -y btrfs-progs
     echo > /etc/default/grub
     echo "GRUB_TIMEOUT=1" >> /etc/default/grub
     echo "GRUB_DISABLE_UUID=true" >> /etc/default/grub
@@ -88,10 +88,10 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     echo "GRUB_ENABLE_BLSCFG=true" >> /etc/default/grub
     # Install GRUB (while in chroot)
     if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
-      dnf install -y $DNF_ARGS grub2-efi-x64 grub2-efi-x64-modules shim || exit 1
+      dnf --comment="Install GRUB" install -y $DNF_ARGS grub2-efi-x64 grub2-efi-x64-modules shim || exit 1
       grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg || exit 1
     else
-      dnf install -y $DNF_ARGS grub2-pc-modules || exit 1
+      dnf --comment="Install GRUB" install -y $DNF_ARGS grub2-pc-modules || exit 1
       grub2-install "$DEVICE" || exit 1
       grub2-mkconfig -o /boot/grub2/grub.cfg || exit 1
     fi
@@ -106,9 +106,9 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
 
 
     # Update all packages to the latest version
-    dnf update -y $DNF_ARGS
+    dnf --comment="Update all packages" update -y $DNF_ARGS
     # Make sure the kernel was installed; reinstall it to re-generate the GRUB boot entries
-    dnf reinstall -y $DNF_ARGS $CUSTOM_KERNEL_PACKAGES
+    dnf --comment="Reinstall kernel to re-generate the GRUB boot entries" reinstall -y $DNF_ARGS $CUSTOM_KERNEL_PACKAGES
 
 EOF
 
