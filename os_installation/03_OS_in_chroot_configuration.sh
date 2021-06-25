@@ -105,7 +105,7 @@ if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
 fi
 
 # Disable the default GRUB configuration
-chmod -x "$MOUNTPOINT/etc/grub.d/*"
+chmod -x "$MOUNTPOINT"/etc/grub.d/*
 # Insert the custom GRUB configuration
 cp -f "./GRUB_BTRFS/grub.cfg" "$MOUNTPOINT/etc/grub.d/custom-grub.cfg"
 chmod +x  "$MOUNTPOINT/etc/grub.d/custom-grub.cfg"
