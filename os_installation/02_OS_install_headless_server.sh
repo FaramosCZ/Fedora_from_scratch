@@ -5,7 +5,7 @@
 # AUTHOR:
 #     Michal Schorm
 #     mschorm@redhat.com
-#     2019
+#     2021
 #
 # LICENSE:
 #     MIT

@@ -5,7 +5,7 @@
 # AUTHOR:
 #     Michal Schorm
 #     mschorm@redhat.com
-#     2019
+#     2021
 #
 # LICENSE:
 #     MIT
@@ -74,43 +74,33 @@ mkdir -p "$MOUNTPOINT"
 # Prepare file to store data for the /etc/fstab
 rm -rf .tmp_fstab
 
-# Create a new array, holding number of '/' contained  in each mountpoint path
-for i in "${!PARTITION_MOUNTPOINTS[@]}"; do
-  tmp=${PARTITION_MOUNTPOINTS[i]//"/"}
-  PARTITION_MOUNTPOINTS_SLASH_COUNT[i]=$(((${#PARTITION_MOUNTPOINTS[i]} - ${#tmp})))
-done
 
-# Get the highest number in the new array
-PARTITION_MOUNTPOINTS_SLASH_COUNT_HIGHEST=$( printf '%s\n' "${PARTITION_MOUNTPOINTS_SLASH_COUNT[@]}" | sort -nr | head -n1 )
+#----------------------------------------
 
+# Create a directory for a mount point
+mkdir -p "$MOUNTPOINT""/" || exit
 
-# Mount the paths in the correct order
-COUNTER=0
-while [ $COUNTER -le "$PARTITION_MOUNTPOINTS_SLASH_COUNT_HIGHEST" ] ; do
+# Mount the root of the BTRFS there
+mount -t btrfs "$DEVICE""p2" "$MOUNTPOINT" || exit
+# Create a subvolume that will act as a root for our filesystem
+btrfs subvolume create "$MOUNTPOINT""/root" || exit
+# Also create a symlink to it, which will be used by GRUB EFI confiuration
+pushd "$MOUNTPOINT"
+ln -s "root" "boot" || exit
+popd
+# Mount the new subvolume instead
+umount "$MOUNTPOINT" || exit
+mount -t btrfs -o subvol="boot" "$DEVICE""p2" "$MOUNTPOINT" || exit
 
-  for i in "${!PARTITION_MOUNTPOINTS_SLASH_COUNT[@]}"; do
-    if [ $COUNTER -eq ${PARTITION_MOUNTPOINTS_SLASH_COUNT[i]} ] ; then
-      mkdir -p "$MOUNTPOINT${PARTITION_MOUNTPOINTS[i]}" || exit
-      mount "$DEVICE"$((i+MKFS_OFFSET)) "$MOUNTPOINT${PARTITION_MOUNTPOINTS[i]}" || exit
-      # Also prepare /etc/fstab entry right away
-      if [ -z "${PARTITION_LABELS[i]}" ] ; then
-        echo -e -n "$DEVICE"$((i+MKFS_OFFSET))"\t" >> .tmp_fstab || exit
-      else
-        echo -e -n "LABEL=${PARTITION_LABELS[i]}\t" >> .tmp_fstab || exit
-      fi
-      echo -e -n "${PARTITION_MOUNTPOINTS[i]}\t${PARTITION_FILESYSTEMS[i]}\t" >> .tmp_fstab || exit
-      # NOTE:
-      #   In case of BTRFS, we want to set "subvol=<name_of_the_subvolume>" instead of "defaults".
-      #   We may also add other BTRFS mount arguments, like compression
-      #   We also want to set the numbers to "0  0" on a BTRFS volume
-      echo -e "defaults\t1\t$COUNTER" >> .tmp_fstab || exit
-      bash
-    fi
-  done
+# Create a directory for EFI partition mount point
+mkdir -p "$MOUNTPOINT""/boot/efi/" || exit
+# And mount the EFI partition inside
+mount "$DEVICE""p1" "$MOUNTPOINT""/boot/efi/" || exit
 
-  (( COUNTER++ ))
-done
-
+cat << EOF > .tmp_fstab || exit
+LABEL=EFI    /boot/efi/  vfat   defaults     0  2
+LABEL=BTRFS  /           btrfs  subvol=boot  0  0
+EOF
 
 #----------------------------------------
 

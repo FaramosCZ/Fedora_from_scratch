@@ -5,7 +5,7 @@
 # AUTHOR:
 #     Michal Schorm
 #     mschorm@redhat.com
-#     2019
+#     2021
 #
 # LICENSE:
 #     MIT
@@ -81,28 +81,25 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     touch /.autorelabel
 
     dnf --comment="Install BTRFS utilities" install -y btrfs-progs
+
     echo > /etc/default/grub
     echo "GRUB_TIMEOUT=1" >> /etc/default/grub
     echo "GRUB_DISABLE_UUID=true" >> /etc/default/grub
-    echo "GRUB_CMDLINE_LINUX=\"intel_idle.max_cstate=3\"" >> /etc/default/grub
     echo "GRUB_ENABLE_BLSCFG=true" >> /etc/default/grub
 
+    # Add custom necessary default kernel boot parameters
+    echo "GRUB_CMDLINE_LINUX=\"intel_idle.max_cstate=2 i915.enable_psr=0 i915.enable_fbc=0\"" >> /etc/default/grub
+
     # Install GRUB (while in chroot)
-    if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
-      dnf --comment="Install GRUB" install -y $DNF_ARGS grub2-efi-x64 grub2-efi-x64-modules shim || exit 1
-    else
-      dnf --comment="Install GRUB" install -y $DNF_ARGS grub2-pc-modules || exit 1
-      grub2-install "$DEVICE" || exit 1
-    fi
+    dnf --comment="Install GRUB" install -y $DNF_ARGS grub2-efi-x64 grub2-efi-x64-modules shim || exit 1
+
 EOF
 
 
 
 # In case of EFI instalaltion, apply a clever hack, which will redirect the GRUB loader
 # from the "/boot/efi/EFI/fedora/grub.cfg" to the "/boot/grub2/gurb.cfg"
-if [ "$FIRMWARE_INTERFACE" = "UEFI" ] ; then
-  cp -f "./GRUB_BTRFS/EFI-grub.cfg" "$MOUNTPOINT/boot/efi/EFI/fedora/grub.cfg"
-fi
+cp -f "./GRUB_BTRFS/EFI-grub.cfg" "$MOUNTPOINT/boot/efi/EFI/fedora/grub.cfg"
 
 # Disable the default GRUB configuration
 chmod -x "$MOUNTPOINT"/etc/grub.d/*
@@ -121,13 +118,6 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
 
     # Generate the GRUB config file
     grub2-mkconfig -o /boot/grub2/grub.cfg || exit 1
-
-
-    # Re-declare the array, since we jumped to chroot
-    SERVICES_TO_ENABLE=("${SERVICES_TO_ENABLE[@]}")
-    # Enable desired services, if any was set
-    [ -n "${SERVICES_TO_ENABLE[*]}" ] && \
-    for service in "${SERVICES_TO_ENABLE[@]}"; do systemctl enable "\$service"; done
 
 
     # Update all packages to the latest version
