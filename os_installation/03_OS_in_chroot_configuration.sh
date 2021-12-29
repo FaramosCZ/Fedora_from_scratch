@@ -87,9 +87,6 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     echo "GRUB_DISABLE_UUID=true" >> /etc/default/grub
     echo "GRUB_ENABLE_BLSCFG=true" >> /etc/default/grub
 
-    # Add custom necessary default kernel boot parameters
-    echo "GRUB_CMDLINE_LINUX=\"intel_idle.max_cstate=2 i915.enable_psr=0 i915.enable_fbc=0\"" >> /etc/default/grub
-
     # Install GRUB (while in chroot)
     dnf --comment="Install GRUB" install -y $DNF_ARGS grub2-efi-x64 grub2-efi-x64-modules shim || exit 1
 

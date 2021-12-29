@@ -99,11 +99,11 @@ printf '%s\n' "${SFDISK_INPUT[@]}" | sfdisk "$DEVICE" || exit
 
 # Create filesystem on the EFI partition
 #   use 'a' to overwrite any FS that was present
-echo a | mkfs.vfat -n "EFI" "$DEVICE""p1" || exit
+echo a | mkfs.vfat -n "EFI" "$DEVICE""1" || exit
 
 # Create filesystem on the BTRFS partition
 #   use 'a' to overwrite any FS that was present
-echo a | mkfs.btrfs -f -L "BTRFS" "$DEVICE""p2" || exit
+echo a | mkfs.btrfs -f -L "BTRFS" "$DEVICE""2" || exit
 
 
 #----------------------------------------
