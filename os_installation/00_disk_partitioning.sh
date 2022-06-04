@@ -67,8 +67,8 @@ source ./disk_partitioning.conf || exit
 
 # Make sure all partitions are unmounted
 swapoff -a || :
-swapoff "$DEVICE"* || :
-umount -l "$DEVICE"* || :
+swapoff "$(DISK_NAME)"* || :
+umount -l "$(DISK_NAME)"* || :
 umount -R -c "$MOUNTPOINT"/* || :
 
 sync
@@ -77,7 +77,7 @@ sleep 3;
 #----------------------------------------
 
 # Create modern GPT layout of the partition tables
-echo "label: gpt" | sfdisk "$DEVICE" || exit
+echo "label: gpt" | sfdisk "$(DISK_NAME)" || exit
 sleep 1;
 
 
@@ -94,18 +94,18 @@ SFDISK_INPUT[0]=";50M;C12A7328-F81F-11D2-BA4B-00A0C93EC93B;"
 SFDISK_INPUT[1]=";99T;;"
 
 # Execute the 'sfdisk' utility
-printf '%s\n' "${SFDISK_INPUT[@]}" | sfdisk "$DEVICE" || exit
+printf '%s\n' "${SFDISK_INPUT[@]}" | sfdisk "$(DISK_NAME)" || exit
 
 
 #----------------------------------------
 
 # Create filesystem on the EFI partition
 #   use 'a' to overwrite any FS that was present
-echo a | mkfs.vfat -n "EFI" "$DEVICE""1" || exit
+echo a | mkfs.vfat -n "EFI" "$(DISK_NAME 1)" || exit
 
 # Create filesystem on the BTRFS partition
 #   use 'a' to overwrite any FS that was present
-echo a | mkfs.btrfs -f -L "BTRFS" "$DEVICE""2" || exit
+echo a | mkfs.btrfs -f -L "BTRFS" "$(DISK_NAME 2)" || exit
 
 
 #----------------------------------------

@@ -64,7 +64,7 @@ source ./disk_partitioning.conf || exit
 # MOUNT THE DISKS IN THE CORRECT ORDER
 
 # Make sure all partitions are unmounted
-umount -l "$DEVICE"* || :
+umount -l "$(DISK_NAME)"* || :
 umount -R -c "$MOUNTPOINT"/* || :
 
 # Prepare the mount directory
@@ -81,7 +81,7 @@ rm -rf .tmp_fstab
 mkdir -p "$MOUNTPOINT""/" || exit
 
 # Mount the root of the BTRFS there
-mount -t btrfs "$DEVICE""2" "$MOUNTPOINT" || exit
+mount -t btrfs "$(DISK_NAME 2)" "$MOUNTPOINT" || exit
 # Create a subvolume that will act as a root for our filesystem
 btrfs subvolume create "$MOUNTPOINT""/root" || exit
 # Also create a symlink to it, which will be used by GRUB EFI confiuration
@@ -90,12 +90,12 @@ ln -s "root" "boot" || exit
 popd
 # Mount the new subvolume instead
 umount "$MOUNTPOINT" || exit
-mount -t btrfs -o subvol="boot" "$DEVICE""2" "$MOUNTPOINT" || exit
+mount -t btrfs -o subvol="boot" "$(DISK_NAME 2)" "$MOUNTPOINT" || exit
 
 # Create a directory for EFI partition mount point
 mkdir -p "$MOUNTPOINT""/boot/efi/" || exit
 # And mount the EFI partition inside
-mount "$DEVICE""1" "$MOUNTPOINT""/boot/efi/" || exit
+mount "$(DISK_NAME 1)" "$MOUNTPOINT""/boot/efi/" || exit
 
 cat << EOF > .tmp_fstab || exit
 LABEL=EFI    /boot/efi/  vfat   defaults     0  2
