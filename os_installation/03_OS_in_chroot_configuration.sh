@@ -80,8 +80,6 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     # Tell SELinux to repair context to all files at first startup
     touch /.autorelabel
 
-    dnf --comment="Install BTRFS utilities" install -y btrfs-progs
-
     echo > /etc/default/grub
     echo "GRUB_TIMEOUT=1" >> /etc/default/grub
     echo "GRUB_DISABLE_UUID=true" >> /etc/default/grub
