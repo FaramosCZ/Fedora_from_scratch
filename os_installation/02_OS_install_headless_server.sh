@@ -70,7 +70,7 @@ metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-$OS&arch=x86_64"
  > /etc/yum.repos.d/fedora-custom.repo
 
 # Install core software inside the mounted directory tree
-dnf --comment="Install the DNF group @core" --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-custom" install btrfs-progs @core
+dnf --comment="Install the DNF group @core" --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core
 
 # Install the favourite software inside
 # NOTE: DNF will prioritize the configuration inside "--installroot", so we don't need to use our custom repo anymore.
