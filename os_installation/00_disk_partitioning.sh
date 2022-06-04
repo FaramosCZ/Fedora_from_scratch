@@ -45,7 +45,8 @@ set -vx
 #   All of the 'sfdisk', 'mkfs' and 'mount' utilities lives in the 'util-linux' package
 #   The 'readlink' utility is in the 'coreutils' package
 #   The 'btrfs-progs' obviously for tools for working with BTRFS
-dnf install -y util-linux coreutils btrfs-progs || exit
+#   The 'dosfstools' offers the 'mkfs.vfat' required for creating an EFI parition filesystem
+dnf install -y util-linux coreutils btrfs-progs dosfstools || exit
 
 
 #----------------------------------------
