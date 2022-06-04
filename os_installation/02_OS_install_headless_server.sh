@@ -82,7 +82,7 @@ dnf --comment="Install custom packages which I want to be part of the minimal in
 dnf --comment="Install kernel" --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck install $CUSTOM_KERNEL_PACKAGES
 
 # Copy network resolution file into the mounted system
-cp /etc/resolv.conf "$MOUNTPOINT"/etc/
+echo y | cp --remove-destination /etc/resolv.conf "$MOUNTPOINT"/etc/
 
 # Set up device name
 echo "$DEVICE_NAME" > "$MOUNTPOINT"/etc/hostname
