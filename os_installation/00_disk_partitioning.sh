@@ -89,6 +89,7 @@ sleep 1;
 SFDISK_INPUT[0]=";50M;C12A7328-F81F-11D2-BA4B-00A0C93EC93B;"
 
 # The only other thing on the disk will be a single BTRFS partition covering the rest of the space
+# When size is set bigger than what the real disk size is, maximum left disk space is used instead
 SFDISK_INPUT[1]=";99T;;"
 
 # Execute the 'sfdisk' utility
