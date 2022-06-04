@@ -114,11 +114,14 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     # Generate the GRUB config file
     grub2-mkconfig -o /boot/grub2/grub.cfg || exit 1
 
-
     # Update all packages to the latest version
     dnf --comment="Update all packages" update -y $DNF_ARGS
+
     # Make sure the kernel was installed; reinstall it to re-generate the GRUB boot entries
     dnf --comment="Reinstall kernel to re-generate the GRUB boot entries" reinstall -y $DNF_ARGS $CUSTOM_KERNEL_PACKAGES
+
+    # Fix final version of bootloader entries after they were re-generated be kernel re-installation
+    sed -i 's|^options .*|options root=$(DISK_NAME 2) rootflags=subvol=boot |g' /boot/loader/entries/*
 
 EOF
 
