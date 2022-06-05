@@ -69,6 +69,7 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
 
 
     # BUG: rhbz#1645118
+    # NOTE: bug last spotted on F36
       # Set up root password
       # echo -e "root:root" | chpasswd
     # WORKAROUND: rhbz#1645118
