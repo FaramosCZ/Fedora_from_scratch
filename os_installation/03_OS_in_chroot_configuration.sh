@@ -74,8 +74,8 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
       # echo -e "root:root" | chpasswd
     # WORKAROUND: rhbz#1645118
     # Remove line for user "root"
-    sed -i '/^root/ d' /etc/shadow
-    echo '$ROOT_PASSWORD_HASH' >> /etc/shadow
+    sed -i 's|^root.*|$ROOT_PASSWORD_HASH|g' /etc/shadow
+    #echo '$ROOT_PASSWORD_HASH' >> /etc/shadow
 
 
     # Tell SELinux to repair context to all files at first startup
