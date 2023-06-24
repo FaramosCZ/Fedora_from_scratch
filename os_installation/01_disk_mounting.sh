@@ -98,8 +98,8 @@ mkdir -p "$MOUNTPOINT""/boot/efi/" || exit
 mount "$(DISK_NAME 1)" "$MOUNTPOINT""/boot/efi/" || exit
 
 cat << EOF > .tmp_fstab || exit
-LABEL=EFI    /boot/efi/  vfat   defaults     0  2
-LABEL=BTRFS  /           btrfs  subvol=boot  0  0
+LABEL=EFI-MMCBLK    /boot/efi/  vfat   defaults     0  2
+LABEL=BTRFS-MMCBLK  /           btrfs  subvol=boot  0  0
 EOF
 
 #----------------------------------------
