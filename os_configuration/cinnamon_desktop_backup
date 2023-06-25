@@ -1,0 +1,162 @@
+[/]
+alttab-switcher-delay=100
+desklet-snap-interval=25
+desktop-effects-close-effect='traditional'
+desktop-effects-close-time=120
+desktop-effects-close-transition='easeOutQuad'
+desktop-effects-map-effect='traditional'
+desktop-effects-map-time=100
+desktop-effects-map-transition='easeOutQuad'
+desktop-effects-maximize-effect='none'
+desktop-effects-maximize-time=100
+desktop-effects-maximize-transition='easeInExpo'
+desktop-effects-minimize-effect='traditional'
+desktop-effects-minimize-time=160
+desktop-effects-minimize-transition='easeInQuad'
+desktop-effects-tile-effect='none'
+desktop-effects-tile-time=100
+desktop-effects-tile-transition='easeInQuad'
+desktop-effects-unmaximize-effect='none'
+desktop-effects-unmaximize-time=100
+desktop-effects-unmaximize-transition='easeNone'
+enabled-applets=['panel1:left:0:menu@cinnamon.org:0', 'panel1:left:2:grouped-window-list@cinnamon.org:2', 'panel1:right:1:keyboard@cinnamon.org:3', 'panel1:right:2:systray@cinnamon.org:4', 'panel1:right:3:xapp-status@cinnamon.org:5', 'panel1:right:4:notifications@cinnamon.org:6', 'panel1:right:5:printers@cinnamon.org:7', 'panel1:right:6:removable-drives@cinnamon.org:8', 'panel1:right:7:network@cinnamon.org:9', 'panel1:right:8:power@cinnamon.org:10', 'panel1:right:9:calendar@cinnamon.org:11', 'panel1:right:10:sound@cinnamon.org:12', 'panel1:right:0:workspace-switcher@cinnamon.org:13']
+enabled-desklets=@as []
+hotcorner-layout=['expo:false:0', 'scale:false:0', 'scale:false:0', 'desktop:false:0']
+next-applet-id=14
+panel-edit-mode=false
+panel-zone-symbolic-icon-sizes='[{"panelId": 1, "left": 30, "center": 28, "right": 16}]'
+panels-height=['1:30']
+show-media-keys-osd='small'
+startup-animation=false
+window-effect-speed=1
+
+[cinnamon-session]
+quit-delay-toggle=false
+quit-time-delay=60
+
+[control-center/display]
+show-fractional-scaling-controls=true
+
+[desktop/a11y/keyboard]
+bouncekeys-delay=300
+mousekeys-accel-time=300
+mousekeys-init-delay=300
+mousekeys-max-speed=10
+slowkeys-delay=300
+
+[desktop/a11y/mouse]
+dwell-threshold=10
+dwell-time=1.2
+secondary-click-time=1.2
+
+[desktop/applications/calculator]
+exec='gnome-calculator'
+
+[desktop/applications/terminal]
+exec='terminator'
+exec-arg='--'
+
+[desktop/interface]
+clock-show-date=true
+clock-show-seconds=true
+cursor-blink-time=1200
+cursor-size=24
+cursor-theme='Adwaita'
+first-day-of-week=1
+gtk-im-module='gtk-im-context-simple:xim'
+gtk-theme='Mint-Y-Aqua'
+icon-theme='Mint-Y-Aqua'
+scaling-factor=uint32 0
+text-scaling-factor=1.0
+toolkit-accessibility=true
+
+[desktop/keybindings]
+looking-glass-keybinding=@as []
+
+[desktop/keybindings/media-keys]
+screensaver=['<Control><Alt>l', 'XF86ScreenSaver', '<Super>l']
+terminal=['<Super>r']
+touchpad-off=['XF86TouchpadOff', '<Super>F11']
+touchpad-on=['XF86TouchpadOn', '<Super>F10']
+touchpad-toggle=['XF86TouchpadToggle']
+
+[desktop/media-handling]
+autorun-never=true
+autorun-x-content-ignore=['x-content/unix-software']
+autorun-x-content-open-folder=@as []
+autorun-x-content-start-app=@as []
+
+[desktop/peripherals/keyboard]
+delay=uint32 500
+repeat-interval=uint32 30
+
+[desktop/peripherals/mouse]
+double-click=400
+drag-threshold=8
+speed=0.66567607726597311
+
+[desktop/peripherals/touchpad]
+natural-scroll=false
+send-events='enabled'
+speed=0.60593220338983045
+
+[desktop/privacy]
+remember-recent-files=false
+
+[desktop/session]
+idle-delay=uint32 900
+
+[desktop/sound]
+event-sounds=false
+maximum-volume=100
+volume-sound-enabled=false
+
+[desktop/wm/preferences]
+min-window-opacity=30
+num-workspaces=3
+theme='Mint-X'
+workspace-names=['1', '2', '3']
+
+[launcher]
+check-frequency=300
+memory-limit=4098
+
+[muffin]
+draggable-border-width=10
+experimental-features=@as []
+resize-threshold=24
+tile-hud-threshold=25
+
+[settings-daemon/peripherals/keyboard]
+numlock-state='off'
+
+[settings-daemon/peripherals/touchscreen]
+orientation-lock=true
+
+[settings-daemon/plugins/power]
+button-power='nothing'
+critical-battery-action='nothing'
+idle-dim-time=300
+lid-close-ac-action='blank'
+lid-close-battery-action='suspend'
+lid-close-suspend-with-external-monitor=true
+sleep-display-ac=10800
+sleep-display-battery=900
+sleep-inactive-ac-timeout=0
+sleep-inactive-battery-timeout=0
+
+[sounds]
+close-enabled=false
+login-enabled=false
+logout-enabled=false
+map-enabled=false
+maximize-enabled=false
+minimize-enabled=false
+plug-enabled=false
+switch-enabled=false
+tile-enabled=false
+unmaximize-enabled=false
+unplug-enabled=false
+
+[theme]
+name='Mint-Y-Dark-Aqua'

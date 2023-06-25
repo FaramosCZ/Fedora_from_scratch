@@ -4,7 +4,7 @@
 # CHECK THAT WE ARE RUNNING AS ROOT
 
 if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
+  then echo "Please run this script as root"
   exit
 fi
 
@@ -20,7 +20,7 @@ pushd "${relative_path%/*}" || exit
 #----------------------------------------
 # RUN ALL THE SCRIPTS IN THIS DIRECTOY IN THE CORRECT ORDER
 
-sh 00*
+for SCRIPT in ./0*.sh; do echo "$SCRIPT" ; sh "$SCRIPT" ; done
 
 #----------------------------------------
 
