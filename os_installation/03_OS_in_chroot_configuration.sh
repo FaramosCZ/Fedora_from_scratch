@@ -78,18 +78,6 @@ cat << EOF | chroot "$MOUNTPOINT" /bin/bash || exit
     #echo '$ROOT_PASSWORD_HASH' >> /etc/shadow
 
 
-    # Tell SELinux to repair context to all files at first startup
-    # NOTE:
-    #   since Fedora 38, the systemd is unable to start on a mislabeled filesystem.
-    #   The OS has to be started with 'enforcing=0' kernel parameter on the very first boot,
-    #   so the systemd isn't restricted by the mislabeled filesystem and the auto-relabeling
-    #   can be executed at all.
-    #   RHEL 8.4 BZ describing the same problem: https://bugzilla.redhat.com/show_bug.cgi?id=2019905
-    # NOTE:
-    #   there is also a "autorelabel=1" kernel parameter. Mabye I will find it as a better pproach in the future?
-    #   https://danwalsh.livejournal.com/10972.html
-    touch /.autorelabel
-
     echo > /etc/default/grub
     echo "GRUB_TIMEOUT=1" >> /etc/default/grub
     echo "GRUB_DISABLE_UUID=true" >> /etc/default/grub
@@ -144,6 +132,10 @@ rm -rf "$MOUNTPOINT"/etc/fstab
 cp .tmp_fstab "$MOUNTPOINT"/etc/fstab || exit
 # Check the new version
 cat "$MOUNTPOINT"/etc/fstab
+
+
+# Restore the correct SELinux labeling on the target system
+setfiles -F -r "$MOUNTPOINT" "$MOUNTPOINT"/etc/selinux/targeted/contexts/files/file_contexts "$MOUNTPOINT"
 
 
 #----------------------------------------
