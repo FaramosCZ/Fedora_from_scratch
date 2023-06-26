@@ -134,6 +134,9 @@ cp .tmp_fstab "$MOUNTPOINT"/etc/fstab || exit
 cat "$MOUNTPOINT"/etc/fstab
 
 
+cp -a ./../ "$MOUNTPOINT"/root/fedora_from_scratch
+
+
 # Restore the correct SELinux labeling on the target system
 setfiles -F -r "$MOUNTPOINT" "$MOUNTPOINT"/etc/selinux/targeted/contexts/files/file_contexts "$MOUNTPOINT"
 
