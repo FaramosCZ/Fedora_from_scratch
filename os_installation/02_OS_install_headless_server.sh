@@ -70,6 +70,11 @@ metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-$OS&arch=x86_64"
  > /etc/yum.repos.d/fedora-custom.repo
 
 # Install core software inside the mounted directory tree
+# NOTE:
+#   the 'btrfs-progs' package is needed for installation scriplets of the 'grub2-common' and 'kernel-core' packages
+# NOTE:
+#   The 'glibc-all-langpacks' is needed before we set preferred locale and keyboard layout
+#   The 'langpacks-en' and 'langpacks-cs' are required in oder to anythying to look "pretty". Or in some cases readable at all. For example text in the 'terminator' program in GUI.
 dnf --comment="Install the DNF group @core" --releasever="$OS" --installroot="$MOUNTPOINT" -y $DNF_ARGS --nogpgcheck --repo="fedora-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core
 
 # Install the favourite software inside
