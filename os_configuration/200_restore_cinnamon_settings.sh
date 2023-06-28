@@ -7,4 +7,8 @@
 
 su -c "dconf load /org/cinnamon/ < ./cinnamon_desktop_backup" udoo
 
+# Language & Locale for the non-root user
+su -c "localectl set-locale LANG=en_US.UTF-8" udoo
+su -c 'localectl set-x11-keymap cz,us " " , grp:alt_shift_toggle' udoo
+
 #----------------------------------------
