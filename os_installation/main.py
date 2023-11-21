@@ -171,12 +171,12 @@ with open('/etc/yum.repos.d/fedora-custom.repo', 'w') as file:
 #   The 'glibc-all-langpacks' is needed before we set preferred locale and keyboard layout
 #   The 'langpacks-en' and 'langpacks-cs' are required in oder to anythying to look "pretty". Or in some cases readable at all. For example text in the 'terminator' program in GUI.
 
-common_dnf_arguments = f'--releasever="{fedora_release}" -y --nogpgcheck'
+common_dnf_arguments = f'--releasever="{fedora_release}" --installroot={mountpoint_path} -y --nogpgcheck'
 
 custom_core_packages = 'nano tree bash-completion git wget'
 custom_kernel_packages = 'kernel kernel-core kernel-modules -x amd-gpu-firmware -x nvidia-gpu-firmware'
 
-shell_cmd(f'dnf --comment="Install the DNF group @core" --installroot={mountpoint_path} {common_dnf_arguments} --repo="fedora-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core')
+shell_cmd(f'dnf --comment="Install the DNF group @core" {common_dnf_arguments} --repo="fedora-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core')
 
 # Save the actual fstab
 with open(f'{mountpoint_path}/etc/fstab', 'w') as file:
@@ -185,11 +185,11 @@ with open(f'{mountpoint_path}/etc/fstab', 'w') as file:
 # Install the favourite software inside
 # NOTE: DNF will prioritize the configuration inside "--installroot", so we don't need to use our custom repo anymore.
 #       If we would like to use the Host system repo instead, we would need to use "--setopt=reposdir=..." to force repos on Host to be priotitized.
-shell_cmd(f'echo -e "dnf --comment="Install custom packages which I want to be part of the minimal installation" {common_dnf_arguments} install {custom_core_packages}" | chroot {mountpoint_path} /bin/bash')
+shell_cmd(f'dnf --comment="Install custom packages which I want to be part of the minimal installation" {common_dnf_arguments} install {custom_core_packages}')
 
 # Make sure the kernel was installed too
 # MAYBE BUG: sometimes (e.g. when installing Fedora Beta release), the kernel won't install ... why? That's mystery. Let's make sure we have it.
-shell_cmd(f'echo -e "dnf --comment="Install kernel" {common_dnf_arguments} install {custom_kernel_packages}" | chroot {mountpoint_path} /bin/bash')
+shell_cmd(f'dnf --comment="Install kernel" {common_dnf_arguments} install {custom_kernel_packages}')
 
 #----------------------------------------
 
@@ -208,7 +208,7 @@ shell_cmd(f'echo {device_name} > {mountpoint_path}/etc/hostname')
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/etc-default-grub {mountpoint_path}/etc/default/grub ')
 
 # Install GRUB
-shell_cmd(f'echo -e "dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-efi-x64 grub2-efi-x64-modules shim" | chroot {mountpoint_path} /bin/bash')
+shell_cmd(f'dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-efi-x64 grub2-efi-x64-modules shim')
 
 # Copy /etc/default/grub config file inside
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/EFI-grub.cfg {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
@@ -225,10 +225,10 @@ shell_cmd(f'sed -i "s/REPLACE-THIS-WITH-DISK-LABEL/BTRFS-{random_hash}/g" {mount
 shell_cmd(f'echo "grub2-mkconfig -o /boot/grub2/grub.cfg" | chroot {mountpoint_path} /bin/bash')
 
 # Update all packages to the latest version
-shell_cmd(f'echo -e "dnf --comment="Update all packages" {common_dnf_arguments} update" | chroot {mountpoint_path} /bin/bash')
+shell_cmd(f'dnf --comment="Update all packages" {common_dnf_arguments} update')
 
 # Make sure the kernel was installed; reinstall it to re-generate the GRUB boot entries
-shell_cmd(f'echo -e "dnf --comment="Reinstall kernel to re-generate the GRUB boot entries" {common_dnf_arguments} reinstall {custom_kernel_packages}" | chroot {mountpoint_path} /bin/bash')
+shell_cmd(f'dnf --comment="Reinstall kernel to re-generate the GRUB boot entries" {common_dnf_arguments} reinstall {custom_kernel_packages}')
 
 # Restore the correct SELinux labeling on the target system
 shell_cmd(f'echo -e "setfiles -F /etc/selinux/targeted/contexts/files/file_contexts /" | chroot {mountpoint_path} /bin/bash', ignore_error_code=True)
