@@ -14,5 +14,11 @@ dnf -y --comment="Install the Audio Firmware" install alsa-sof-firmware
 dnf -y --comment="Install the VLC and Audacity with more Audio Video Codecs" install vlc audacity ffmpeg-libs ffmpeg
 dnf -y --comment="Install the Audio and Video Codecs" group update Multimedia
 
+dnf -y --comment="Gaming tools" install lutris steam protontricks wine
+
+dnf -y --comment="NVidia drivers" install /usr/bin/nvidia-smi kmod-nvidia -x xorg-x11-drv-nvidia-power
+# wait for the DNF transaction lock to be freed by the NVIDIA driver background installation
+sleep 120
+
 #----------------------------------------
 
