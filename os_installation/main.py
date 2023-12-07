@@ -131,8 +131,8 @@ shell_cmd(f'mkdir -p {mountpoint_path}/boot/efi/')
 shell_cmd(f'mount {partition_path[1]} {mountpoint_path}/boot/efi/')
 
 fstab_entry=f'''\
-LABEL=EFI-{random_hash}    /boot/efi/  vfat   defaults     0  2
-LABEL=BTRFS-{random_hash}  /           btrfs  subvol=boot  0  0
+LABEL=EFI-{random_hash}    /boot/efi/  vfat   noatime,defaults     0  2
+LABEL=BTRFS-{random_hash}  /           btrfs  noatime,subvol=boot  0  0
 '''
 
 # Mount the rest of the directories from the running system
