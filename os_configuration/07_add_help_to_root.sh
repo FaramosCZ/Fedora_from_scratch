@@ -22,6 +22,8 @@ alias GBA='git branch -a'
 
 alias DMESG='dmesg --level=err,warn -w '
 
+alias MOUNT='mount | column -t'
+
 alias HELP='echo -e "
   # Set ssh key authentification from guest to host
   ssh-copy-id <user>@<machine>
