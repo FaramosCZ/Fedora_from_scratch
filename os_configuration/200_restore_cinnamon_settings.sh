@@ -6,6 +6,7 @@
 #   Note: I'm not sure if this command works even before the user logs into the GUI for the first time. Need testing.
 
 su -c "dconf load /org/cinnamon/ < ./cinnamon_desktop_backup" lod
+pkill -HUP -f "cinnamon --replace"
 
 # Language & Locale for the non-root user
 su -c "localectl set-locale LANG=en_US.UTF-8" lod
