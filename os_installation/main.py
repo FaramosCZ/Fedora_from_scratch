@@ -142,7 +142,7 @@ with open('/etc/yum.repos.d/fedora-custom.repo', 'w') as file:
 common_dnf_arguments = f'--releasever="{fedora_release}" --installroot={mountpoint_path} -y --nogpgcheck'
 
 custom_core_packages = 'nano tree bash-completion git wget'
-custom_kernel_packages = 'kernel kernel-core kernel-modules -x amd-gpu-firmware -x nvidia-gpu-firmware'
+custom_kernel_packages = 'kernel kernel-core kernel-modules amd-gpu-firmware -x nvidia-gpu-firmware'
 
 shell_cmd(f'dnf --comment="Install the DNF group @core" {common_dnf_arguments} --disablerepo="*" --enablerepo="fedora-custom" --enablerepo="fedora-updates-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core')
 
@@ -194,7 +194,7 @@ shell_cmd(f'chmod -x {mountpoint_path}/etc/grub.d/*')
 # '/usr/lib/kernel/install.d/90-loadentry.install' script which reads the
 # '/etc/kernel/cmdline' config file
 kernel_parameters=f"root=LABEL=BTRFS-{random_hash} rootflags=subvol=boot ro"
-extra_kernel_parameters=" "
+extra_kernel_parameters="modprobe.blacklist=radeon amdgpu.si_support=1 amdgpu.cik_support=1 amdgpu.dc=1"
 shell_cmd(f'echo {kernel_parameters} {extra_kernel_parameters} > {mountpoint_path}/etc/kernel/cmdline')
 shell_cmd(f'chattr +i {mountpoint_path}/etc/kernel/cmdline')
 
