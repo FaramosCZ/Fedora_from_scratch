@@ -14,5 +14,7 @@ dnf -y --comment="Install the Most Restricted Audio Video Codecs" install http:/
 dnf -y --comment="Install the VLC and Audacity with more Audio Video Codecs" install vlc audacity ffmpeg-libs ffmpeg
 dnf -y --comment="Install the Audio and Video Codecs" groupupdate Multimedia
 
+dnf -y --comment="Workaround AMD graphic issues" install xorg-x11-drv-amdgpu mesa-vdpau-drivers
+
 #----------------------------------------
 
