@@ -214,30 +214,72 @@ shell_cmd(f'dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-ef
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/EFI-grub.cfg {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
 shell_cmd(f'sed -i "s/REPLACE-THIS-WITH-DISK-LABEL/BTRFS-{random_hash}/g" {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
 
-# Disable the default GRUB configuration
-shell_cmd(f'chmod -x {mountpoint_path}/etc/grub.d/*')
-# Insert the custom GRUB configuration
-shell_cmd(f'cp -f "./GRUB_BTRFS/grub.cfg" {mountpoint_path}/etc/grub.d/custom-grub.cfg')
-shell_cmd(f'chmod +x {mountpoint_path}/etc/grub.d/custom-grub.cfg')
-shell_cmd(f'sed -i "s/REPLACE-THIS-WITH-DISK-LABEL/BTRFS-{random_hash}/g" {mountpoint_path}/etc/grub.d/custom-grub.cfg ')
+# Put the custom GRUB configuration to the /boot/grub2/grub.cfg path and protect it
+shell_cmd(f'cp -f "./GRUB_BTRFS/grub.cfg" {mountpoint_path}/boot/grub2/grub.cfg')
+shell_cmd(f'chattr +i {mountpoint_path}/boot/grub2/grub.cfg')
 
-# Generate the GRUB config inside of the chroot
-shell_cmd(f'echo "grub2-mkconfig -o /boot/grub2/grub.cfg" | chroot {mountpoint_path} /bin/bash')
+# Disable *all* of the default GRUB configuration
+shell_cmd(f'chmod -x {mountpoint_path}/etc/grub.d/*')
+
+# The 'kernel-core' package calls in its post-trans scriptlet the
+# 'kernel-install' script, which reads the
+# '/usr/lib/kernel/install.d/90-loadentry.install' script which reads the
+# '/etc/kernel/cmdline' config file
+kernel_parameters=f"root=LABEL=BTRFS-{random_hash} rootflags=subvol=boot ro"
+extra_kernel_parameters=" "
+shell_cmd(f'echo {kernel_parameters} {extra_kernel_parameters} > {mountpoint_path}/etc/kernel/cmdline')
+shell_cmd(f'chattr +i {mountpoint_path}/etc/kernel/cmdline')
+
+# But also, it calls *somehow* the
+# '/sbin/grub2-get-kernel-settings' which calls the
+# '/usr/share/grub/grub-mkconfig' which calls the
+# '/usr/bin/grub2-mkrelpath' in order to find the full path to the kernel from GRUB POV - that means also the name of the BTRFS subvolume
+# However we need the subvolume to be always the
+# 'boot' so the bootloader entry would work for any name of the BTRFS subvolume it reside in
+shell_cmd(f'mv {mountpoint_path}/usr/bin/grub2-mkrelpath {mountpoint_path}/usr/bin/grub2-mkrelpath-ORIGINAL')
+file_content = f'''\
+#! /usr/bin/bash
+# This script is a wrapper on top of the GRUB grub2-mkrelpath binary,
+# It fixes an issue with BTRFS subvolume probe.
+# Instead of taking the found subvolume, force our own instead
+echo "/boot"$(/usr/bin/grub2-mkrelpath-ORIGINAL -r "$1")
+'''
+with open(f'{mountpoint_path}/usr/bin/grub2-mkrelpath', 'w') as file:
+    file.write(file_content)
+
+shell_cmd(f'chmod a+x {mountpoint_path}/usr/bin/grub2-mkrelpath')
+
+# Fortify against package updates
+shell_cmd(f'chattr +i {mountpoint_path}/usr/bin/grub2-mkrelpath')
+shell_cmd(f'chattr +i {mountpoint_path}/usr/bin/grub2-mkrelpath-ORIGINAL')
+
+file_content = f'''\
+# All GRUB package updates must be revieved by hand to check whether they break workaround with /usr/bin/grub2-mkrelpath wrapper
+grub2-tools
+'''
+with open(f'{mountpoint_path}/etc/dnf/protected.d/CUSTOM-grub2.conf', 'w') as file:
+    file.write(file_content)
+
+# Re-install the kernel-core to re-generate the BLS boot entries
+shell_cmd(f'dnf --comment="Reinstall kernel-core to re-generate the GRUB boot entries" {common_dnf_arguments} reinstall kernel-core')
+
+# However since the kernel-core re-instal doesn't do it's job for the RESCUE entry, we have to fix it manually
+shell_cmd(f'sed -i "s|^options .*|options $(cat {mountpoint_path}/etc/kernel/cmdline) |g" {mountpoint_path}/boot/loader/entries/*rescue.conf')
+shell_cmd(f'sed -i "s| /root/boot/| /boot/boot/|g" {mountpoint_path}/boot/loader/entries/*rescue.conf')
+
+#----------------------------------------
+#----------------------------------------
+#----------------------------------------
+#----------------------------------------
 
 # Update all packages to the latest version
 shell_cmd(f'dnf --comment="Update all packages" {common_dnf_arguments} update')
-
-# Make sure the kernel was installed; reinstall it to re-generate the GRUB boot entries
-shell_cmd(f'dnf --comment="Reinstall kernel to re-generate the GRUB boot entries" {common_dnf_arguments} reinstall {custom_kernel_packages}')
 
 # Restore the correct SELinux labeling on the target system
 shell_cmd(f'echo -e "setfiles -F /etc/selinux/targeted/contexts/files/file_contexts /" | chroot {mountpoint_path} /bin/bash', ignore_error_code=True)
 
 # Set the initial root password
 shell_cmd(f'echo -e "root:root" | chpasswd --root {mountpoint_path}/')
-
-# Fix final version of bootloader entries after they were re-generated be kernel re-installation
-shell_cmd(f'sed -i "s|^options .*|options root=LABEL=BTRFS-{random_hash} rootflags=subvol=boot |g" {mountpoint_path}/boot/loader/entries/* ')
 
 # Copy this script repo inside
 shell_cmd(f'cp -a ./../ {mountpoint_path}/root/fedora_from_scratch')
