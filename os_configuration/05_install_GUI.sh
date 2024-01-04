@@ -8,6 +8,8 @@
 dnf -y --comment="Install the Cinnamon DE" groupinstall cinnamon
 dnf -y --comment="Remove the bloatware" -x cinnamon -x xorg-x11-* -x lsof -x boost* -x chrony -x "flatpak*" remove "dnfdragora-*" pidgin xfburn thunderbird xawtv shotwell ImageMagick "*anaconda*" trousers yelp redshift mpv gnome-calculator gnome-calendar plymouth "fwupd*" PackageKit deltarpm enchant exiv2 fortune-mod "geolite*" hexchat kpartx nilfs-utils "onboard*" "pcsc-lite*"
 
+dnf -y --comment="Bricks the installed system, at least with F39 on Dell Latitude 5590" remove "xdg-desktop-portal*"
+
 dnf -y --comment="Install the Audio Tooling" install alsa-utils pulseaudio-utils
 dnf -y --comment="Install the Audio Firmware" install alsa-sof-firmware
 dnf -y --comment="Install the Most Restricted Audio Video Codecs" install http://rpm.livna.org/livna-release.rpm
