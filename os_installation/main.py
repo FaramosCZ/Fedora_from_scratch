@@ -9,6 +9,9 @@ from config import *
 from random import choices
 from string import ascii_lowercase, digits
 
+# LUKS password
+luks_password = input("Please enter new LUKS password: ")
+
 partition_path = []
 if disk.startswith(("sd", "hd", "xvd")):
     partition_char = ""
@@ -27,7 +30,7 @@ random_hash = ''.join(choices(ascii_lowercase + digits, k=6))
 #   The 'readlink' utility is in the 'coreutils' package
 #   The 'btrfs-progs' obviously for tools for working with BTRFS
 #   The 'dosfstools' offers the 'mkfs.vfat' required for creating an EFI parition filesystem
-shell_cmd("dnf install -y util-linux coreutils btrfs-progs dosfstools")
+shell_cmd("dnf install -y util-linux coreutils btrfs-progs dosfstools cryptsetup")
 
 #----------------------------------------
 # PREPARE THE DISK LAYOUT
@@ -61,9 +64,13 @@ shell_cmd(f'echo "{sfdisk_input}" | sfdisk {disk_path}')
 #   use 'a' to overwrite any FS that was present
 shell_cmd(f'echo a | mkfs.vfat -n "EFI-{random_hash}" {partition_path[1]}')
 
+# Crypt the second partition using LUKS
+shell_cmd(f'echo {luks_password} | cryptsetup luksFormat --type luks1 --force-password --pbkdf-force-iterations=100000 {partition_path[2]}')
+shell_cmd(f'echo {luks_password} | cryptsetup luksOpen {partition_path[2]} decrypted_boot')
+
 # Create filesystem on the BTRFS partition
 #   use 'a' to overwrite any FS that was present
-shell_cmd(f'echo a | mkfs.btrfs -f -L "BTRFS-{random_hash}" {partition_path[2]}')
+shell_cmd(f'echo a | mkfs.btrfs -f -L "BTRFS-{random_hash}" /dev/mapper/decrypted_boot')
 
 #----------------------------------------
 #----------------------------------------
@@ -74,14 +81,14 @@ shell_cmd(f'echo a | mkfs.btrfs -f -L "BTRFS-{random_hash}" {partition_path[2]}'
 shell_cmd(f'mkdir -p {mountpoint_path}')
 
 # Mount the root of the BTRFS there
-shell_cmd(f'mount -t btrfs {partition_path[2]} {mountpoint_path}')
+shell_cmd(f'mount -t btrfs /dev/mapper/decrypted_boot {mountpoint_path}')
 # Create a subvolume that will act as a root for our filesystem
 shell_cmd(f'btrfs subvolume create {mountpoint_path}/root')
 # Also create a symlink to it, which will be used by GRUB EFI confiuration
 shell_cmd(f'cd {mountpoint_path} ; ln -s "root" "boot"')
 # Mount the new subvolume instead
 shell_cmd(f'umount {mountpoint_path}')
-shell_cmd(f'mount -t btrfs -o subvol="boot" {partition_path[2]} {mountpoint_path}')
+shell_cmd(f'mount -t btrfs -o subvol="boot" /dev/mapper/decrypted_boot {mountpoint_path}')
 
 # Create a directory for EFI partition mount point
 shell_cmd(f'mkdir -p {mountpoint_path}/boot/efi/')
@@ -141,7 +148,7 @@ with open('/etc/yum.repos.d/fedora-custom.repo', 'w') as file:
 
 common_dnf_arguments = f'--releasever="{fedora_release}" --installroot={mountpoint_path} -y --nogpgcheck'
 
-custom_core_packages = 'nano tree bash-completion git wget'
+custom_core_packages = 'nano tree bash-completion git wget cryptsetup'
 custom_kernel_packages = 'kernel kernel-core kernel-modules -x amd-gpu-firmware -x nvidia-gpu-firmware'
 
 shell_cmd(f'dnf --comment="Install the DNF group @core" {common_dnf_arguments} --disablerepo="*" --enablerepo="fedora-custom" --enablerepo="fedora-updates-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core')
@@ -172,6 +179,22 @@ shell_cmd(f'echo {device_name} > {mountpoint_path}/etc/hostname')
 #----------------------------------------
 #----------------------------------------
 
+# Match LUKS encrypted partitions with names
+shell_cmd(f'echo "decrypted_boot UUID="`cryptsetup luksUUID {partition_path[2]}`" /etc/cryptsetup-keys.d/luks_full_disk_encryption.key luks,discard" > {mountpoint_path}/etc/crypttab')
+# Configure dracut to insert the crypttab file into the initramfs
+shell_cmd(f'echo "install_items=/etc/crypttab" > {mountpoint_path}/etc/dracut.conf.d/custom_add-crypttab.conf')
+# ... and to insert the LUKS key
+shell_cmd(f'echo "install_items=/etc/cryptsetup-keys.d/luks_full_disk_encryption.key" > {mountpoint_path}/etc/dracut.conf.d/custom_add-crypttab-key.conf')
+# Finally generate the said key
+shell_cmd(f'mkdir -p {mountpoint_path}/etc/cryptsetup-keys.d/')
+shell_cmd(f'chmod 600 {mountpoint_path}/etc/cryptsetup-keys.d/')
+shell_cmd(f'dd bs=512 count=4 if=/dev/random of={mountpoint_path}/etc/cryptsetup-keys.d/luks_full_disk_encryption.key iflag=fullblock')
+shell_cmd(f'chmod 600 {mountpoint_path}/etc/cryptsetup-keys.d/luks_full_disk_encryption.key')
+shell_cmd(f'chattr +i {mountpoint_path}/etc/cryptsetup-keys.d/luks_full_disk_encryption.key')
+shell_cmd(f'echo {luks_password} | cryptsetup -v luksAddKey {partition_path[2]} {mountpoint_path}/etc/cryptsetup-keys.d/luks_full_disk_encryption.key')
+
+#----------------------------------------
+
 # Copy /etc/default/grub config file inside
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/etc-default-grub {mountpoint_path}/etc/default/grub ')
 
@@ -181,6 +204,11 @@ shell_cmd(f'dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-ef
 # Copy /etc/default/grub config file inside
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/EFI-grub.cfg {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
 shell_cmd(f'sed -i "s/REPLACE-THIS-WITH-DISK-LABEL/BTRFS-{random_hash}/g" {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
+shell_cmd(f'''
+GRUB_UUID=`cryptsetup luksUUID {partition_path[2]}`;
+GRUB_UUID=${{GRUB_UUID//-/}};
+sed -i 's/@@LUKS_UUID@@/'$GRUB_UUID'/g' "{mountpoint_path}/boot/efi/EFI/fedora/grub.cfg"
+''')
 
 # Put the custom GRUB configuration to the /boot/grub2/grub.cfg path and protect it
 shell_cmd(f'cp -f "./GRUB_BTRFS/grub.cfg" {mountpoint_path}/boot/grub2/grub.cfg')
