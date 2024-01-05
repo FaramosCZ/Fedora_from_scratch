@@ -38,7 +38,7 @@ def shell_cmd(command, print_stdout=True, print_command=True, ignore_error_code=
 
 # =================================================================================================================
 
-disk = "sda"
+disk = "nvme0n1"
 disk_path = f"/dev/{disk}"
 mountpoint_path = "/mnt/FEDORA_FROM_SCRATCH"
 
