@@ -252,3 +252,10 @@ shell_cmd(f'echo -e "root:root" | chpasswd --root {mountpoint_path}/')
 
 # Copy this script repo inside
 shell_cmd(f'cp -a ./../ {mountpoint_path}/root/fedora_from_scratch')
+
+#----------------------------------------
+
+#echo "INSTALLATION COMPLETE !!"
+#echo "Please check following files by hand:"
+#nano "$MOUNTPOINT"/etc/{fstab,crypttab,cryptsetup-keys.d/luks_full_disk_encryption.key,dracut.conf.d/custom_add-crypttab.conf,dracut.conf.d/custom_add-crypttab-key.conf,dnf/protected.d/CUSTOM-grub2.conf} "$MOUNTPOINT"/usr/bin/grub2-mkrelpath "$MOUNTPOINT"/boot/{grub2/grub2.cfg,grub2/grubenv,efi/EFI/fedora/grub.cfg,boot/loader/entries/*}
+#lsinitrd "$MOUNTPOINT"/boot/initramfs*x86_64* | grep etc/ | grep -i -e cryp
