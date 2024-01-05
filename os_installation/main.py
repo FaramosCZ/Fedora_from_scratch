@@ -152,7 +152,7 @@ shell_cmd(f'mount -o bind  /dev {mountpoint_path}/dev ')
 #----------------------------------------
 
 # Don't assume the OS version we are currently in. Prepare custom repository to get packages from.
-repofile = f'''
+repofile = f'''\
 [fedora-custom]
 name=fedora-custom
 enabled=1
@@ -241,6 +241,3 @@ shell_cmd(f'sed -i "s|^options .*|options root=LABEL=BTRFS-{random_hash} rootfla
 
 # Copy this script repo inside
 shell_cmd(f'cp -a ./../ {mountpoint_path}/root/fedora_from_scratch')
-#cp -a ./../ "$MOUNTPOINT"/root/fedora_from_scratch
-#
-
