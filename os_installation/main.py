@@ -83,25 +83,20 @@ shell_cmd('sync ; sleep 3', False, False, True)
 shell_cmd(f'echo "label: gpt" | sfdisk {disk_path}')
 shell_cmd('sync ; sleep 1', False, False, True)
 
-# When UEFI is used, we need to create EFI partition at the beginning of the disk
-#   50 MB should be more than enough in case of Fedora. The required space depends mainly
-#   on the bootloader and its choice which data to store on EFI and which elsewhere.
-partition_efi=";50M;C12A7328-F81F-11D2-BA4B-00A0C93EC93B;"
+# When BIOS is used, we need to create BIOS BOOT partition at the beginning of the disk
+#   1 MB is the usual size
+partition_bios=";1M;21686148-6449-6E6F-744E-656564454649;"
 
 # The only other thing on the disk will be a single BTRFS partition covering the rest of the space
 # When size is set bigger than what the real disk size is, maximum left disk space is used instead
 partition_btrfs=";99T;;"
 
 # Execute the 'sfdisk' utility
-sfdisk_input=f"{partition_efi}\n{partition_btrfs}"
+sfdisk_input=f"{partition_bios}\n{partition_btrfs}"
 shell_cmd(f'echo "{sfdisk_input}" | sfdisk {disk_path}')
 
 #----------------------------------------
 # CREATE FILESYSTEMS
-
-# Create filesystem on the EFI partition
-#   use 'a' to overwrite any FS that was present
-shell_cmd(f'echo a | mkfs.vfat -n "EFI-{random_hash}" {partition_path[1]}')
 
 # Create filesystem on the BTRFS partition
 #   use 'a' to overwrite any FS that was present
@@ -125,14 +120,8 @@ shell_cmd(f'cd {mountpoint_path} ; ln -s "root" "boot"')
 shell_cmd(f'umount {mountpoint_path}')
 shell_cmd(f'mount -t btrfs -o subvol="boot" {partition_path[2]} {mountpoint_path}')
 
-# Create a directory for EFI partition mount point
-shell_cmd(f'mkdir -p {mountpoint_path}/boot/efi/')
-# And mount the EFI partition inside
-shell_cmd(f'mount {partition_path[1]} {mountpoint_path}/boot/efi/')
-
 fstab_entry=f'''\
 # BASE SYSTEM
-LABEL=EFI-{random_hash}    /boot/efi/        vfat   noatime,defaults     0  2
 LABEL=BTRFS-{random_hash}  /                 btrfs  noatime,subvol=boot  0  0
 
 # PREPARED MOUNTS
@@ -212,14 +201,11 @@ shell_cmd(f'echo {device_name} > {mountpoint_path}/etc/hostname')
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/etc-default-grub {mountpoint_path}/etc/default/grub ')
 
 # Install GRUB
-shell_cmd(f'dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-efi-x64 grub2-efi-x64-modules shim')
-
-# Copy /etc/default/grub config file inside
-shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/EFI-grub.cfg {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
-shell_cmd(f'sed -i "s/REPLACE-THIS-WITH-DISK-LABEL/BTRFS-{random_hash}/g" {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
+shell_cmd(f'dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-pc-modules')
 
 # Put the custom GRUB configuration to the /boot/grub2/grub.cfg path and protect it
 shell_cmd(f'cp -f "./GRUB_BTRFS/grub.cfg" {mountpoint_path}/boot/grub2/grub.cfg')
+shell_cmd(f'sed -i "s/REPLACE-THIS-WITH-DISK-LABEL/BTRFS-{random_hash}/g" {mountpoint_path}/boot/grub2/grub.cfg')
 shell_cmd(f'chattr +i {mountpoint_path}/boot/grub2/grub.cfg')
 
 # Disable *all* of the default GRUB configuration
@@ -271,6 +257,11 @@ shell_cmd(f'dnf --comment="Reinstall kernel-core to re-generate the GRUB boot en
 # However since the kernel-core re-instal doesn't do it's job for the RESCUE entry, we have to fix it manually
 shell_cmd(f'sed -i "s|^options .*|options $(cat {mountpoint_path}/etc/kernel/cmdline) |g" {mountpoint_path}/boot/loader/entries/*rescue.conf')
 shell_cmd(f'sed -i "s| /root/boot/| /boot/boot/|g" {mountpoint_path}/boot/loader/entries/*rescue.conf')
+
+# Install the GRUB onto the disk
+#   for BIOS boot it is necessary to install the grub manually to the disk
+#   this will also create directories under /boot/grub2 containing necessary GRUB modules
+shell_cmd(f'echo "grub2-install --target=i386-pc {disk_path}" | chroot {mountpoint_path} /bin/bash')
 
 #----------------------------------------
 #----------------------------------------
