@@ -8,6 +8,9 @@
 su -c "dconf load /org/cinnamon/ < ./cinnamon_desktop_backup" lod
 su -c "cinnamon --replace >/dev/null 2>&1 &" lod
 
+# Restore XED configuration
+su -c "dconf load /org/x/editor/preferences/ < ./xed_configuration_backup" lod
+
 # Language & Locale for the non-root user
 su -c "localectl set-locale LANG=en_US.UTF-8" lod
 su -c 'localectl set-x11-keymap cz,us " " , grp:alt_shift_toggle' lod

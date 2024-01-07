@@ -1,0 +1,12 @@
+[editor]
+auto-indent=true
+bracket-matching=true
+display-line-numbers=true
+highlight-current-line=true
+prefer-dark-theme=true
+scheme='cobalt'
+wrap-mode='none'
+
+[ui]
+enable-tab-scrolling=false
+statusbar-visible=true
