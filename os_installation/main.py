@@ -252,6 +252,7 @@ shell_cmd(f'chmod a+x {mountpoint_path}/usr/bin/grub2-mkrelpath')
 # Fortify against package updates
 shell_cmd(f'chattr +i {mountpoint_path}/usr/bin/grub2-mkrelpath')
 shell_cmd(f'chattr +i {mountpoint_path}/usr/bin/grub2-mkrelpath-ORIGINAL')
+shell_cmd(f'echo "exclude=\"grub2*\"" >> {mountpoint_path}/etc/dnf/dnf.conf')
 
 file_content = f'''\
 # All GRUB package updates must be revieved by hand to check whether they break workaround with /usr/bin/grub2-mkrelpath wrapper
