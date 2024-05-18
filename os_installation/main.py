@@ -1,46 +1,13 @@
 #! /usr/bin/python3
 
-import subprocess
-from sys import exit
+# lib.py
+from lib import *
+
+# config.py
+from config import *
 
 from random import choices
 from string import ascii_lowercase, digits
-
-from os import geteuid
-
-# =================================================================================================================
-
-# Check if the script is run with root privileges
-if geteuid() == 0:
-    print("RUNNING AS ROOT")
-else:
-    print("ERROR: THIS SCRIPT HAS TO BE EXECUTED AS ROOT !")
-    exit(1)
-
-# =================================================================================================================
-
-def shell_cmd(command, print_stdout=True, print_command=True, ignore_error_code=False):
-
-    if print_command:
-        print(f"\nCMD:\n{command}\n")
-
-    # Run the command with shell=True and print output directly
-    process = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-
-    if print_stdout:
-        print(f"CMD OUTPUT:\n{process.stdout}")
-
-    # Check the return code
-    if not ignore_error_code:
-        if process.returncode != 0:
-            print("COMMAND FAILED with return code:", process.returncode)
-            exit(process.returncode)
-
-# =================================================================================================================
-
-disk = "sda"
-disk_path = f"/dev/{disk}"
-mountpoint_path = "/mnt/FEDORA_FROM_SCRATCH"
 
 partition_path = []
 if disk.startswith(("sd", "hd", "xvd")):
@@ -52,10 +19,6 @@ partition_path = { 1: f"{disk_path}{partition_char}1", 2: f"{disk_path}{partitio
 
 # Generate a random 6-character string
 random_hash = ''.join(choices(ascii_lowercase + digits, k=6))
-
-fedora_release=39
-
-device_name="PY-fed-FARAMOS"
 
 #----------------------------------------
 
@@ -69,12 +32,7 @@ shell_cmd("dnf install -y util-linux coreutils btrfs-progs dosfstools")
 #----------------------------------------
 # PREPARE THE DISK LAYOUT
 
-# Make sure all partitions are unmounted
-shell_cmd('swapoff -a', ignore_error_code=True)
-shell_cmd(f'swapoff {disk_path}*', ignore_error_code=True)
-shell_cmd(f'umount -l {disk_path}*', ignore_error_code=True)
-shell_cmd(f'umount -R -c {mountpoint_path}/*', ignore_error_code=True)
-shell_cmd('sync ; sleep 3', False, False, True)
+from cleanup import *
 
 #----------------------------------------
 # CREATE PARTITIONS
