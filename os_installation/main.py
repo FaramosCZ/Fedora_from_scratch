@@ -120,6 +120,12 @@ name=fedora-custom
 enabled=1
 gpgcheck=0
 metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-{fedora_release}&arch=x86_64
+
+[fedora-updates-custom]
+name=fedora-updates-custom
+enabled=1
+gpgcheck=0
+metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-{fedora_release}&arch=x86_64
 '''
 with open('/etc/yum.repos.d/fedora-custom.repo', 'w') as file:
     file.write(repofile)
@@ -138,7 +144,7 @@ common_dnf_arguments = f'--releasever="{fedora_release}" --installroot={mountpoi
 custom_core_packages = 'nano tree bash-completion git wget'
 custom_kernel_packages = 'kernel kernel-core kernel-modules -x amd-gpu-firmware -x nvidia-gpu-firmware'
 
-shell_cmd(f'dnf --comment="Install the DNF group @core" {common_dnf_arguments} --repo="fedora-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core')
+shell_cmd(f'dnf --comment="Install the DNF group @core" {common_dnf_arguments} --disablerepo="*" --enablerepo="fedora-custom" --enablerepo="fedora-updates-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core')
 
 # Save the actual fstab
 with open(f'{mountpoint_path}/etc/fstab', 'w') as file:
