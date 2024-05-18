@@ -20,7 +20,10 @@ pushd "${relative_path%/*}" || exit
 #----------------------------------------
 # RUN ALL THE SCRIPTS IN THIS DIRECTOY IN THE CORRECT ORDER
 
-for SCRIPT in ./0*.sh; do echo "$SCRIPT" ; sh "$SCRIPT" ; done
+for SCRIPT in ./0*.sh; do
+    echo "$SCRIPT" | tee -a autorun.log
+    sh "$SCRIPT" 2>&1 | tee -a autorun.log
+done
 
 #----------------------------------------
 
