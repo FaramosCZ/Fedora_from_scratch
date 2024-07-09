@@ -3,8 +3,8 @@
 #----------------------------------------
 # UNIX User name to be used in other scripts
 
-USER="lod"
-USER_PRETTY="Hvězdná loď"
+USER="cmeldis"
+USER_PRETTY="Čmelda"
 
 #----------------------------------------
 
