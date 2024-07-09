@@ -1,4 +1,4 @@
-disk = "sda"
+disk = "nvme0n1"
 fedora_release=40
 
 device_name="FEDORA-FROM-SCRATCH"
