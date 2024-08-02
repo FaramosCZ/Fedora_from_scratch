@@ -142,7 +142,7 @@ with open('/etc/yum.repos.d/fedora-custom.repo', 'w') as file:
 common_dnf_arguments = f'--releasever="{fedora_release}" --installroot={mountpoint_path} -y --nogpgcheck'
 
 custom_core_packages = 'nano tree bash-completion git wget'
-custom_kernel_packages = 'kernel kernel-core kernel-modules -x amd-gpu-firmware -x nvidia-gpu-firmware'
+custom_kernel_packages = 'kernel kernel-core kernel-modules amd-gpu-firmware -x nvidia-gpu-firmware'
 
 shell_cmd(f'dnf --comment="Install the DNF group @core" {common_dnf_arguments} --disablerepo="*" --enablerepo="fedora-custom" --enablerepo="fedora-updates-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core')
 
