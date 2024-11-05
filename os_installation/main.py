@@ -22,6 +22,9 @@ random_hash = ''.join(choices(ascii_lowercase + digits, k=6))
 
 #----------------------------------------
 
+# Make sure the system time and date is correct (or at least close enough)
+shell_cmd("chronyc tracking")
+
 # Make sure we have all of the required software
 #   All of the 'sfdisk', 'mkfs' and 'mount' utilities lives in the 'util-linux' package
 #   The 'readlink' utility is in the 'coreutils' package
