@@ -3,6 +3,9 @@
 #----------------------------------------
 # Set up infinite terminator scrollback
 
-su -c "cp -a --remove-destination ./DATA/terminator .config/"
+source ./user_conf.sh
+
+cp -a --remove-destination ./DATA/terminator /home/"$USER"/.config/
+chown -R "$USER":"$USER" /home/"$USER"/.config/
 
 #----------------------------------------
