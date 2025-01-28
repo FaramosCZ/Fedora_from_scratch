@@ -3,7 +3,7 @@
 #----------------------------------------
 # Install favourite software
 
-dnf -y --comment="Install favourite software" install tree tldr curl tar git zip unzip unrar openssl wget nano terminator ntfs-3g pip flatpak dnf-plugin-system-upgrade puzzles cmatrix cool-retro-term
+dnf -y --comment="Install favourite software" install tree tldr curl tar git zip unzip unrar openssl wget nano terminator ntfs-3g pip flatpak dnf-plugin-system-upgrade puzzles cmatrix cool-retro-term rsync
 dnf -y --comment="Install fonts" install unicode-emoji "google-noto-emoji*" dejavu-fonts-all
 
 # Install Discord as a flatpak
