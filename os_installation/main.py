@@ -167,7 +167,7 @@ shell_cmd(f'echo {device_name} > {mountpoint_path}/etc/hostname')
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/etc-default-grub {mountpoint_path}/etc/default/grub ')
 
 # Install GRUB
-shell_cmd(f'dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-pc-modules')
+shell_cmd(f'dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-tools grub2-pc-modules')
 
 # Put the custom GRUB configuration to the /boot/grub2/grub.cfg path and protect it
 shell_cmd(f'cp -f "./GRUB_BTRFS/grub.cfg" {mountpoint_path}/boot/grub2/grub.cfg')
