@@ -6,4 +6,7 @@
 
 dnf --comment="Install the general wi-fi drivers" install -y iwlwifi-mvm-firmware iwlwifi-dvm-firmware
 
+# In case of issue package 'iwlegacy-firmware' can be tried
+# or package 'broadcom-wl', but it taints the kernel
+
 #----------------------------------------
