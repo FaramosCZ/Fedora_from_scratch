@@ -120,13 +120,13 @@ shell_cmd(f'mount -o bind  /dev {mountpoint_path}/dev ')
 repofile = f'''\
 [fedora-custom]
 name=fedora-custom
-enabled=1
+enabled=0
 gpgcheck=0
 metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-{fedora_release}&arch=x86_64
 
 [fedora-updates-custom]
 name=fedora-updates-custom
-enabled=1
+enabled=0
 gpgcheck=0
 metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-{fedora_release}&arch=x86_64
 '''
