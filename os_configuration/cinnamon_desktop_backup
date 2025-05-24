@@ -160,3 +160,6 @@ unplug-enabled=false
 
 [theme]
 name='Mint-Y-Dark-Aqua'
+
+[desktop/screensaver]
+floating-widgets=false
