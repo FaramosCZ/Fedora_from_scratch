@@ -13,6 +13,10 @@ su -c "cinnamon --replace >/dev/null 2>&1 &" "$USER"
 # Restore XED configuration
 su -c "dconf load /org/x/editor/preferences/ < ./xed_configuration_backup" "$USER"
 
+# Restore Terminator configuration
+cp -a ./DATA/terminator "/home/$USER/.config"
+chown -R "$USER:$USER" "/home/$USER/.config/terminator"
+
 # Language & Locale for the non-root user
 su -c "localectl set-locale LANG=en_US.UTF-8" "$USER"
 su -c 'localectl set-x11-keymap cz,us " " , grp:alt_shift_toggle' "$USER"
