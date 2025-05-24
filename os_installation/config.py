@@ -1,5 +1,5 @@
 disk = "sda"
-fedora_release=40
+fedora_release=42
 
 device_name="FEDORA-FROM-SCRATCH"
 

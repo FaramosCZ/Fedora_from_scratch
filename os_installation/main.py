@@ -147,7 +147,7 @@ common_dnf_arguments = f'--releasever="{fedora_release}" --installroot={mountpoi
 custom_core_packages = 'nano tree bash-completion git wget'
 custom_kernel_packages = 'kernel kernel-core kernel-modules -x amd-gpu-firmware -x nvidia-gpu-firmware'
 
-shell_cmd(f'dnf --comment="Install the DNF group @core" {common_dnf_arguments} --disablerepo="*" --enablerepo="fedora-custom" --enablerepo="fedora-updates-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core')
+shell_cmd(f'dnf --comment="Install the DNF group @core" {common_dnf_arguments} --use-host-config --disablerepo="*" --enablerepo="fedora-custom" --enablerepo="fedora-updates-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core')
 
 # Save the actual fstab
 with open(f'{mountpoint_path}/etc/fstab', 'w') as file:
