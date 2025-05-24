@@ -19,9 +19,9 @@ su -c 'localectl set-x11-keymap cz,us " " , grp:alt_shift_toggle' "$USER"
 
 # Restore pinned apps
 PINNED_APPS_CONFIG_FILE=/home/"$USER"/.config/cinnamon/spices/grouped-window-list@cinnamon.org/2.json
-jq '.["pinned-apps"].default = ["nemo.desktop", "org.mozilla.firefox.desktop", "terminator.desktop", "com.discordapp.Discord.desktop:flatpak"]' "$PINNED_APPS_CONFIG_FILE" > /tmp/config.json
+jq '.["pinned-apps"].default = ["nemo.desktop", "brave-browser.desktop", "terminator.desktop", "com.discordapp.Discord.desktop:flatpak"]' "$PINNED_APPS_CONFIG_FILE" > /tmp/config.json
 mv /tmp/config.json "$PINNED_APPS_CONFIG_FILE"
-jq '.["pinned-apps"].value = ["nemo.desktop", "org.mozilla.firefox.desktop", "terminator.desktop", "com.discordapp.Discord.desktop:flatpak"]' "$PINNED_APPS_CONFIG_FILE" > /tmp/config.json
+jq '.["pinned-apps"].value = ["nemo.desktop", "brave-browser.desktop", "terminator.desktop", "com.discordapp.Discord.desktop:flatpak"]' "$PINNED_APPS_CONFIG_FILE" > /tmp/config.json
 mv /tmp/config.json "$PINNED_APPS_CONFIG_FILE"
 chown "$USER":"$USER" "$PINNED_APPS_CONFIG_FILE"
 

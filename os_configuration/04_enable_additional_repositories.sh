@@ -12,7 +12,7 @@ dnf --comment="Enable additional repositories" install -y \
   fedora-workstation-repositories \
   fedora-repos-rawhide
 
-dnf config-manager --set-enabled google-chrome
+dnf config-manager addrepo --from-repofile=https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
 
 #----------------------------------------
 
