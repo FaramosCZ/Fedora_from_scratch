@@ -136,12 +136,12 @@ orientation-lock=true
 [settings-daemon/plugins/power]
 button-power='nothing'
 critical-battery-action='nothing'
-idle-dim-time=300
+idle-dim-time=0
 lid-close-ac-action='blank'
 lid-close-battery-action='suspend'
 lid-close-suspend-with-external-monitor=true
-sleep-display-ac=10800
-sleep-display-battery=900
+sleep-display-ac=0
+sleep-display-battery=0
 sleep-inactive-ac-timeout=0
 sleep-inactive-battery-timeout=0
 
