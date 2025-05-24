@@ -128,7 +128,7 @@ resize-threshold=24
 tile-hud-threshold=25
 
 [settings-daemon/peripherals/keyboard]
-numlock-state='off'
+numlock-state='on'
 
 [settings-daemon/peripherals/touchscreen]
 orientation-lock=true
