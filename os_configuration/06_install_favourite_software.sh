@@ -4,7 +4,7 @@
 # Install favourite software
 
 dnf -y --comment="Install favourite software" install tree tldr curl tar git zip unzip unrar openssl wget nano terminator ntfs-3g pip flatpak dnf-plugin-system-upgrade puzzles cmatrix cool-retro-term rsync
-dnf -y --comment="Install maintenance software" install dnf-plugin-system-upgrade rsync speedtest-cli
+dnf -y --comment="Install maintenance software" install dnf-plugin-system-upgrade rsync speedtest-cli gnome-software
 dnf -y --comment="Install fonts" install "google-noto-color-emoji*" dejavu-fonts-all
 
 dnf -y install brave-browser

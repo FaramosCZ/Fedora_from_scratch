@@ -47,7 +47,8 @@ shell_cmd('sync ; sleep 1', False, False, True)
 # When UEFI is used, we need to create EFI partition at the beginning of the disk
 #   50 MB should be more than enough in case of Fedora. The required space depends mainly
 #   on the bootloader and its choice which data to store on EFI and which elsewhere.
-partition_efi=";50M;C12A7328-F81F-11D2-BA4B-00A0C93EC93B;"
+# Note: Using 500 MB for firmware update purposes
+partition_efi=";500M;C12A7328-F81F-11D2-BA4B-00A0C93EC93B;"
 
 # The only other thing on the disk will be a single BTRFS partition covering the rest of the space
 # When size is set bigger than what the real disk size is, maximum left disk space is used instead
