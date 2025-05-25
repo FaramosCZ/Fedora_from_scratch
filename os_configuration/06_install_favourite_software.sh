@@ -9,6 +9,8 @@ dnf -y --comment="Install fonts" install "google-noto-color-emoji*" dejavu-fonts
 
 dnf -y install brave-browser
 
+dnf -y install EmptyEpsilon
+
 # Install Discord as a flatpak
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
