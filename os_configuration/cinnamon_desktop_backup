@@ -29,6 +29,7 @@ panels-height=['1:30']
 show-media-keys-osd='small'
 startup-animation=false
 window-effect-speed=1
+desktop-effects-workspace=false
 
 [cinnamon-session]
 quit-delay-toggle=false
@@ -69,6 +70,7 @@ icon-theme='Mint-Y-Aqua'
 scaling-factor=uint32 0
 text-scaling-factor=1.0
 toolkit-accessibility=true
+enable-animations=false
 
 [desktop/keybindings]
 looking-glass-keybinding=@as []
