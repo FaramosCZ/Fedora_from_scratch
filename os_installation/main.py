@@ -183,7 +183,7 @@ shell_cmd(f'chmod -x {mountpoint_path}/etc/grub.d/*')
 # '/usr/lib/kernel/install.d/90-loadentry.install' script which reads the
 # '/etc/kernel/cmdline' config file
 kernel_parameters=f"root=LABEL=BTRFS-{random_hash} rootflags=subvol=boot ro"
-extra_kernel_parameters="radeon.cik_support=0 amdgpu.cik_support=1"
+extra_kernel_parameters="acpi=on radeon.cik_support=0 amdgpu.cik_support=1"
 shell_cmd(f'echo {kernel_parameters} {extra_kernel_parameters} > {mountpoint_path}/etc/kernel/cmdline')
 shell_cmd(f'chattr +i {mountpoint_path}/etc/kernel/cmdline')
 
