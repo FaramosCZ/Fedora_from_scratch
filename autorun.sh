@@ -12,7 +12,9 @@ pushd "${relative_path%/*}" || exit
 #----------------------------------------
 # RUN ALL THE AUTORUN SCRIPTS
 
-sh os_installation/autorun.sh
+pushd os_installation
+python3 main.py
+popd
 
 #----------------------------------------
 
