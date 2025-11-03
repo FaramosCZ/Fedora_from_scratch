@@ -256,3 +256,7 @@ shell_cmd(f'echo -e "root:root" | chpasswd --root {mountpoint_path}/')
 
 # Copy this script repo inside
 shell_cmd(f'cp -a ./../ {mountpoint_path}/root/fedora_from_scratch')
+
+#----------------------------------------
+
+print('\033[1;32m\n\n\tHEADLESS OS INSTALLED SUCCESSFULLY. PLEASE REBOOT TO IT TO CONTINUE.\n\n\033[0m')
