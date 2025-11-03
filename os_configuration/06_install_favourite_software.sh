@@ -15,7 +15,6 @@ dnf -y install EmptyEpsilon
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 flatpak install -y flathub com.discordapp.Discord
-flatpak install -y flathub io.freetubeapp.FreeTube
 
 #----------------------------------------
 
