@@ -9,7 +9,7 @@
 #
 #   https://andreaskaris.github.io/blog/linux/setting-journalctl-limits/
 
-sed -i 's|#SystemMaxUse=|SystemMaxUse=50M|g' /etc/systemd/journald.conf
+sed -i 's|#SystemMaxUse=|SystemMaxUse=50M|g' /usr/lib/systemd/journald.conf
 systemctl restart systemd-journald
 
 #----------------------------------------
