@@ -249,7 +249,9 @@ shell_cmd(f'sed -i "s| /root/boot/| /boot/boot/|g" {mountpoint_path}/boot/loader
 shell_cmd(f'dnf --comment="Update all packages" {common_dnf_arguments} update')
 
 # Restore the correct SELinux labeling on the target system
+shell_cmd(f'chattr -i {mountpoint_path}/boot/grub2/grub.cfg {mountpoint_path}/usr/bin/grub2-mkrelpath {mountpoint_path}/etc/kernel/cmdline')
 shell_cmd(f'echo -e "setfiles -F /etc/selinux/targeted/contexts/files/file_contexts /" | chroot {mountpoint_path} /bin/bash', ignore_error_code=True)
+shell_cmd(f'chattr +i {mountpoint_path}/boot/grub2/grub.cfg {mountpoint_path}/usr/bin/grub2-mkrelpath {mountpoint_path}/etc/kernel/cmdline')
 
 # Set the initial root password
 shell_cmd(f'echo -e "root:root" | chpasswd --root {mountpoint_path}/')
