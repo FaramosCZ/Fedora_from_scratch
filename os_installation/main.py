@@ -121,13 +121,13 @@ repofile = f'''\
 name=fedora-custom
 enabled=0
 gpgcheck=0
-metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-{fedora_release}&arch=x86_64
+metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-{fedora_release}&arch=$basearch
 
 [fedora-updates-custom]
 name=fedora-updates-custom
 enabled=0
 gpgcheck=0
-metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-{fedora_release}&arch=x86_64
+metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-f{fedora_release}&arch=$basearch
 '''
 with open('/etc/yum.repos.d/fedora-custom.repo', 'w') as file:
     file.write(repofile)
