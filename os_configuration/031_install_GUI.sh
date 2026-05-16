@@ -11,7 +11,7 @@ dnf -y --comment="Remove the bloatware" -x cinnamon -x xorg-x11-* -x lsof -x boo
 dnf -y --comment="Install the Audio Tooling" install alsa-utils pulseaudio-utils
 dnf -y --comment="Install the Audio Firmware" install alsa-sof-firmware
 #dnf -y --comment="Install the Most Restricted Audio Video Codecs" install http://rpm.livna.org/livna-release.rpm
-dnf -y --comment="Install the VLC and Audacity with more Audio Video Codecs" install vlc audacity ffmpeg-libs ffmpeg
+dnf -y --allowerasing --comment="Install the VLC and Audacity with more Audio Video Codecs" install vlc audacity ffmpeg-libs ffmpeg
 dnf -y --comment="Install the Audio and Video Codecs" group update Multimedia
 
 #----------------------------------------
