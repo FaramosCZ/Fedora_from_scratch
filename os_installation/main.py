@@ -199,7 +199,7 @@ shell_cmd(f'chmod -x {mountpoint_path}/etc/grub.d/*')
 # 'kernel-install' script, which reads the
 # '/usr/lib/kernel/install.d/90-loadentry.install' script which reads the
 # '/etc/kernel/cmdline' config file
-kernel_parameters=f"root=LABEL=BTRFS-{random_hash} rootflags=subvol=boot ro"
+kernel_parameters=f"root=LABEL=BTRFS-{random_hash} rootflags=subvol=boot ro nowatchdog split_lock_detect=off zswap.enabled=0"
 extra_kernel_parameters=" "
 shell_cmd(f'echo {kernel_parameters} {extra_kernel_parameters} > {mountpoint_path}/etc/kernel/cmdline')
 shell_cmd(f'chattr +i {mountpoint_path}/etc/kernel/cmdline')
