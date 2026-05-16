@@ -85,12 +85,12 @@ shell_cmd(f'btrfs subvolume create {mountpoint_path}/root')
 shell_cmd(f'cd {mountpoint_path} ; ln -s "root" "boot"')
 # Mount the new subvolume instead
 shell_cmd(f'umount {mountpoint_path}')
-shell_cmd(f'mount -t btrfs -o subvol="boot" {partition_path[2]} {mountpoint_path}')
+shell_cmd(f'mount -t btrfs -o noatime,subvol="boot" {partition_path[2]} {mountpoint_path}')
 
 # Create a directory for EFI partition mount point
 shell_cmd(f'mkdir -p {mountpoint_path}/boot/efi/')
 # And mount the EFI partition inside
-shell_cmd(f'mount {partition_path[1]} {mountpoint_path}/boot/efi/')
+shell_cmd(f'mount -o noatime {partition_path[1]} {mountpoint_path}/boot/efi/')
 
 fstab_entry=f'''\
 # BASE SYSTEM
