@@ -185,6 +185,8 @@ shell_cmd(f'dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-ef
 # Copy /etc/default/grub config file inside
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/EFI-grub.cfg {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
 shell_cmd(f'sed -i "s/REPLACE-THIS-WITH-DISK-LABEL/BTRFS-{random_hash}/g" {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
+# Add backup file since FAT filesystem of the EFI partition does not allow immunity bit protection
+shell_cmd(f'echo y | cp --remove-destination {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg-BACKUP ')
 
 # Put the custom GRUB configuration to the /boot/grub2/grub.cfg path and protect it
 shell_cmd(f'cp -f "./GRUB_BTRFS/grub.cfg" {mountpoint_path}/boot/grub2/grub.cfg')
