@@ -11,9 +11,9 @@ localectl set-x11-keymap cz,us " " , grp:alt_shift_toggle
 ln -s /usr/share/zoneinfo/Europe/Prague /etc/localtime
 
 #
-echo "\nSynchronizing time with netwok:"
+echo -e "\nSynchronizing time with network:"
 systemctl enable --now systemd-timesyncd
-echo "\t" `date` "\n\n"
+echo -e "\t" `date` "\n\n"
 
 #----------------------------------------
 
