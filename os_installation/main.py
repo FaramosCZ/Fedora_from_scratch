@@ -42,7 +42,7 @@ from cleanup import *
 
 # Create modern GPT layout of the partition tables
 shell_cmd(f'echo "label: gpt" | sfdisk {disk_path}')
-shell_cmd('sync ; sleep 1', False, False, True)
+shell_cmd('udevadm settle')
 
 # When UEFI is used, we need to create EFI partition at the beginning of the disk
 #   50 MB should be more than enough in case of Fedora. The required space depends mainly
