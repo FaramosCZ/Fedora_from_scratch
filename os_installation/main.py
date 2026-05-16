@@ -163,8 +163,8 @@ shell_cmd(f'dnf --comment="Install kernel" {common_dnf_arguments} install {custo
 
 #----------------------------------------
 
-# Copy network resolution file into the mounted system
-shell_cmd(f'echo y | cp --remove-destination /etc/resolv.conf {mountpoint_path}/etc/ ')
+# Provide DNS resolution for chroot operations; systemd-resolved takes over on first boot
+shell_cmd(f'cp --remove-destination /etc/resolv.conf {mountpoint_path}/etc/')
 
 # Set up device name
 shell_cmd(f'echo {device_name} > {mountpoint_path}/etc/hostname')
