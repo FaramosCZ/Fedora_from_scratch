@@ -138,15 +138,15 @@ with open('/etc/yum.repos.d/fedora-custom.repo', 'w') as file:
 # NOTE:
 #   the 'btrfs-progs' package is needed for installation scriplets of the 'grub2-common' and 'kernel-core' packages
 # NOTE:
-#   The 'glibc-all-langpacks' is needed before we set preferred locale and keyboard layout
-#   The 'langpacks-en' and 'langpacks-cs' are required in oder to anythying to look "pretty". Or in some cases readable at all. For example text in the 'terminator' program in GUI.
+#   The 'glibc-langpack-*' packages provide locale data for glibc (needed before setting locale)
+#   The 'langpacks-*' meta-packages pull in application-level translations
 
 common_dnf_arguments = f'--releasever="{fedora_release}" --installroot={mountpoint_path} -y --nogpgcheck'
 
 custom_core_packages = 'nano tree bash-completion git wget'
 custom_kernel_packages = 'kernel kernel-core kernel-modules -x amd-gpu-firmware -x nvidia-gpu-firmware'
 
-shell_cmd(f'dnf --comment="Install the DNF group @core" {common_dnf_arguments} --use-host-config --disablerepo="*" --enablerepo="fedora-custom" --enablerepo="fedora-updates-custom" install btrfs-progs langpacks-en langpacks-cs glibc-all-langpacks @core')
+shell_cmd(f'dnf --comment="Install the DNF group @core" {common_dnf_arguments} --use-host-config --disablerepo="*" --enablerepo="fedora-custom" --enablerepo="fedora-updates-custom" install btrfs-progs glibc-langpack-en glibc-langpack-cs langpacks-en langpacks-cs @core')
 
 # Save the actual fstab
 with open(f'{mountpoint_path}/etc/fstab', 'w') as file:
