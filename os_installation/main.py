@@ -62,12 +62,10 @@ shell_cmd(f'echo "{sfdisk_input}" | sfdisk {disk_path}')
 # CREATE FILESYSTEMS
 
 # Create filesystem on the EFI partition
-#   use 'a' to overwrite any FS that was present
-shell_cmd(f'echo a | mkfs.vfat -n "EFI-{random_hash}" {partition_path[1]}')
+shell_cmd(f'mkfs.vfat -n "EFI-{random_hash}" {partition_path[1]}')
 
 # Create filesystem on the BTRFS partition
-#   use 'a' to overwrite any FS that was present
-shell_cmd(f'echo a | mkfs.btrfs -f -L "BTRFS-{random_hash}" {partition_path[2]}')
+shell_cmd(f'mkfs.btrfs -f -L "BTRFS-{random_hash}" {partition_path[2]}')
 
 #----------------------------------------
 #----------------------------------------
