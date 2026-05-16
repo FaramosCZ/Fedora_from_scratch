@@ -21,11 +21,10 @@ def shell_cmd(command, print_stdout=True, print_command=True, ignore_error_code=
     if print_command:
         print(f"\033[1m\nCMD:\n{command}\n\033[0m")
 
-    # Run the command with shell=True and print output directly
-    process = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-
     if print_stdout:
-        print(f"CMD OUTPUT:\n{process.stdout}")
+        process = subprocess.run(command, shell=True, stderr=subprocess.STDOUT)
+    else:
+        process = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     # Check the return code
     if not ignore_error_code:
