@@ -7,7 +7,7 @@ from lib import *
 from config import *
 
 from random import choices
-from string import ascii_lowercase, digits
+from string import ascii_uppercase, digits
 
 partition_path = []
 if disk.startswith(("sd", "hd", "xvd")):
@@ -18,7 +18,7 @@ elif disk.startswith(("nvme", "vd", "mmcblk")):
 partition_path = { 1: f"{disk_path}{partition_char}1", 2: f"{disk_path}{partition_char}2"}
 
 # Generate a random 6-character string
-random_hash = ''.join(choices(ascii_lowercase + digits, k=6))
+random_hash = ''.join(choices(ascii_uppercase + digits, k=6))
 
 #----------------------------------------
 
