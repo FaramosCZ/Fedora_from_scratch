@@ -63,6 +63,6 @@ Branches may differ in `config.py` (disk device, Fedora release), kernel paramet
 ## Documentation
 
 - **[DESIGN.md](DESIGN.md)** -- Technical design decisions and rationale (partitioning, BTRFS subvolumes, GRUB chain, kernel parameters, bootloader landscape)
-- **[MAINTENANCE.md](MAINTENANCE.md)** -- Operations guide (snapshot management, rollback, label fixups, BTRFS maintenance, GRUB update handling)
+- **[os_maintenance/README.md](os_maintenance/README.md)** -- Maintenance scripts and operations guide (snapshots, rollback, label fixups, BTRFS maintenance, GRUB updates)
 - **[os_installation/README.md](os_installation/README.md)** -- Phase 1 step-by-step walkthrough
 - **[os_configuration/README.md](os_configuration/README.md)** -- Phase 2 & 3 script-by-script reference
