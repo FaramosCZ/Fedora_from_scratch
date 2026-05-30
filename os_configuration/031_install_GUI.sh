@@ -19,5 +19,7 @@ dnf -y --comment="Install the Audio Firmware" install alsa-sof-firmware
 dnf -y --comment="Install the VLC and Audacity with more Audio Video Codecs" install --allowerasing vlc audacity ffmpeg-libs ffmpeg
 dnf -y --comment="Install the RPM Fusion Audio and Video Codecs" install --allowerasing gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly libavcodec-freeworld vlc-plugins-freeworld
 
+dnf -y --comment="Workaround AMD graphic issues" install xorg-x11-drv-amdgpu mesa-vdpau-drivers
+
 #----------------------------------------
 
