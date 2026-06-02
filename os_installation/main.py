@@ -178,7 +178,7 @@ shell_cmd(f'echo {device_name} > {mountpoint_path}/etc/hostname')
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/etc-default-grub {mountpoint_path}/etc/default/grub ')
 
 # Install GRUB
-shell_cmd(f'dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-efi-x64 grub2-efi-x64-modules shim')
+shell_cmd(f'dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-efi-ia32 grub2-efi-ia32-modules shim-ia32')
 
 # Copy /etc/default/grub config file inside
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/EFI-grub.cfg {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
@@ -198,7 +198,7 @@ shell_cmd(f'chmod -x {mountpoint_path}/etc/grub.d/*')
 # '/usr/lib/kernel/install.d/90-loadentry.install' script which reads the
 # '/etc/kernel/cmdline' config file
 kernel_parameters=f"root=LABEL=BTRFS-{random_hash} rootflags=subvol=boot ro nowatchdog split_lock_detect=off zswap.enabled=0"
-extra_kernel_parameters="intel_idle.max_cstate=0 "
+extra_kernel_parameters="intel_idle.max_cstate=0 rd.driver.pre=sdhci_acpi,mmc_core,mmc_block "
 shell_cmd(f'echo {kernel_parameters} {extra_kernel_parameters} > {mountpoint_path}/etc/kernel/cmdline')
 shell_cmd(f'chattr +i {mountpoint_path}/etc/kernel/cmdline')
 
