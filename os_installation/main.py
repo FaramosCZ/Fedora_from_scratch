@@ -262,3 +262,7 @@ shell_cmd(f'cp -a ./../ {mountpoint_path}/root/fedora_from_scratch')
 #----------------------------------------
 
 print('\033[1;32m\n\n\tHEADLESS OS INSTALLED SUCCESSFULLY. PLEASE REBOOT TO IT TO CONTINUE.\n\n\033[0m')
+
+shell_cmd(f'efibootmgr')
+
+shell_cmd(f'echo -e "# efibootmgr --create --disk /dev/mmcblk1 --part 1 --label "Fedora" --loader \'\EFI\fedora\shimia32.efi\' "')
