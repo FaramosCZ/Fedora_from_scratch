@@ -22,6 +22,9 @@ random_hash = ''.join(choices(ascii_uppercase + digits, k=6))
 
 #----------------------------------------
 
+# Make sure the mmcblk disk is discovered
+shell_cmd("modprobe mmc_block")
+
 # Make sure the system time and date is correct (or at least close enough)
 shell_cmd("chronyc tracking")
 
