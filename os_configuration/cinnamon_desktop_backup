@@ -135,6 +135,7 @@ orientation-lock=true
 
 [settings-daemon/plugins/power]
 button-power='nothing'
+power-profile='performance'
 critical-battery-action='nothing'
 idle-dim-time=0
 lid-close-ac-action='blank'
