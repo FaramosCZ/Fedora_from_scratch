@@ -71,7 +71,13 @@ text-scaling-factor=1.0
 toolkit-accessibility=true
 
 [desktop/keybindings]
+custom-list=['custom0']
 looking-glass-keybinding=@as []
+
+[desktop/keybindings/custom-keybindings/custom0]
+binding=['<Control><Alt>Delete']
+command='gnome-system-monitor'
+name='System Monitor'
 
 [desktop/keybindings/media-keys]
 screensaver=['<Control><Alt>l', 'XF86ScreenSaver', '<Super>l']
