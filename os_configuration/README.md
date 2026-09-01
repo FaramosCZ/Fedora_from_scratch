@@ -87,12 +87,14 @@ Uses systemd's `\4{interface}` escape to display the IPv4 address dynamically.
 
 ### 012 -- Limit Journal Size
 
-```bash
-sed -i 's|#SystemMaxUse=|SystemMaxUse=50M|g' /usr/lib/systemd/journald.conf
-systemctl restart systemd-journald
+Creates a drop-in config at `/etc/systemd/journald.conf.d/10-local.conf`:
+
+```ini
+[Journal]
+SystemMaxUse=50M
 ```
 
-Caps the systemd journal at 50 MB. Fleet machines are workstations where only the current and previous boot logs matter. Gigabytes of persistent logs are unnecessary overhead.
+Caps the systemd journal at 50 MB. Fleet machines are workstations where only the current and previous boot logs matter. Gigabytes of persistent logs are unnecessary overhead. Uses a drop-in file rather than editing the main `journald.conf` so the setting survives `dnf update systemd`.
 
 ### 013 -- Set Locale and Timezone
 
