@@ -113,6 +113,21 @@ systemctl enable --now systemd-timesyncd
 | Timezone | Europe/Prague |
 | NTP | `systemd-timesyncd` enabled |
 
+### 014 -- Automatic Btrfs Snapshot Before DNF Transactions
+
+Installs `libdnf5-plugin-actions` and deploys a pre-transaction hook that creates a read-only Btrfs snapshot of the active root subvolume before every `dnf install`, `update`, or `remove`.
+
+**Components deployed:**
+
+| File | Purpose |
+|---|---|
+| `/etc/dnf/libdnf5-plugins/actions.d/btrfs-snapshot.actions` | Tells DNF5 to run the snapshot script on `pre_transaction` |
+| `/usr/local/bin/dnf-pre-snapshot.sh` | Mounts the Btrfs root, snapshots through the `boot` symlink, prunes old auto-snapshots |
+
+Auto-snapshots are named `RO-BACKUP-auto-YYYYMMDD-HHMMSS` and capped at 10. Only auto-snapshots are pruned — manual `RO-BACKUP-NN-*` snapshots are never touched.
+
+See [DESIGN.md — Automatic DNF Snapshots](../DESIGN.md#automatic-dnf-snapshots) for design reasoning.
+
 ### 030 -- Enable Additional Repositories
 
 ```bash
@@ -330,7 +345,7 @@ Use the numbering gaps to insert new scripts in the correct execution position:
 | Gap | Available range |
 |---|---|
 | After snapshot, before hostname | 002-009 |
-| After locale, before repos | 014-029 |
+| After DNF snapshots, before repos | 015-029 |
 | After WiFi, before root shell | 034-049 |
 | After Bluetooth, before user | 054-069 |
 | After Terminator, before reboot | 072-098 |

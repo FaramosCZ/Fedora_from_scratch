@@ -16,6 +16,8 @@ btrfs subvolume snapshot -r boot RO-BACKUP-{name}
 
 Always use `-r` (read-only). Snapshot before major changes: Fedora version upgrades, kernel updates, large package changes.
 
+Note: DNF transactions (install, update, remove) create automatic snapshots via `libdnf5-plugin-actions` — see [DESIGN.md — Automatic DNF Snapshots](../DESIGN.md#automatic-dnf-snapshots). Manual snapshots are still useful for non-DNF changes and named checkpoints.
+
 ### Rolling Back to a Snapshot
 
 Read-only snapshots cannot be booted directly. Create a read-write copy, then switch the boot symlink:

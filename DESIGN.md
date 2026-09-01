@@ -103,6 +103,32 @@ The fstab includes a `noauto` entry for `/mnt/BTRFS-ROOT` that mounts the BTRFS 
 LABEL=BTRFS-{hash}  /mnt/BTRFS-ROOT  btrfs  noatime,subvol=/,X-mount.mkdir,noauto  0  0
 ```
 
+## Automatic DNF Snapshots
+
+Every DNF5 transaction (install, update, remove) automatically creates a read-only Btrfs snapshot before making changes. This covers both manual `dnf` and `dnf-automatic`.
+
+### Mechanism
+
+`libdnf5-plugin-actions` reads `.actions` files from `/etc/dnf/libdnf5-plugins/actions.d/`. A one-line actions file triggers a script on `pre_transaction`. The script mounts the Btrfs root (if not already mounted), snapshots the active subvolume through the `boot` symlink, and prunes old auto-snapshots beyond the retention limit.
+
+### Why Not Snapper or Timeshift
+
+Both are designed for general-purpose snapshot management with their own metadata, configuration, and cleanup policies. This project already has a simple snapshot convention (`RO-BACKUP-*` at the Btrfs root level, `boot` symlink for rollback). A raw `btrfs subvolume snapshot` call fits the existing design without adding a new abstraction layer or daemon.
+
+### Design Choices
+
+| Choice | Rationale |
+|---|---|
+| Snapshots through `boot` symlink | Always snapshots whichever subvolume is currently active, even after a rollback |
+| Read-only (`-r`) | Immutable, consistent with the project's existing snapshot convention |
+| 10 auto-snapshot retention | Generous for workstations; Btrfs CoW deduplication means incremental snapshots are cheap |
+| `RO-BACKUP-auto-*` prefix | Distinguishes automatic snapshots from manual `RO-BACKUP-NN-*` ones; only auto-snapshots are pruned |
+| Script in `/usr/local/bin/` | Survives package updates, standard local scripts location |
+
+### Rollback From an Auto-Snapshot
+
+Same procedure as any other snapshot — change the `boot` symlink and reboot. See [os_maintenance/README.md — Rolling Back](os_maintenance/README.md#rolling-back-to-a-snapshot). For a permanent rollback, create a read-write copy from the read-only auto-snapshot first.
+
 ## GRUB Chain (3-Stage Bootloader)
 
 ### Stage 1: EFI Firmware to GRUB
