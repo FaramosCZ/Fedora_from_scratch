@@ -1,4 +1,4 @@
-fedora_release=44
+fedora_release=45
 
 # Needed for cleanup.py
 mountpoint_path = "/mnt/FEDORA_FROM_SCRATCH"
