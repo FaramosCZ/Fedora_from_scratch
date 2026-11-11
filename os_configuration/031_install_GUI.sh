@@ -13,6 +13,9 @@ dnf -y --comment="Install the Cinnamon DE" group install cinnamon-desktop
 dnf -y --comment="Remove the bloatware" -x cinnamon -x xorg-x11-* -x lsof -x boost* -x chrony -x "flatpak*" remove "dnfdragora-*" pidgin xfburn thunderbird xawtv shotwell ImageMagick "*anaconda*" trousers yelp redshift mpv gnome-calculator gnome-calendar plymouth "fwupd*" PackageKit deltarpm enchant exiv2 fortune-mod "geolite*" hexchat kpartx nilfs-utils "onboard*" "pcsc-lite*" "*evolution*" velocitty zoitechat baobab
 dnf -y --comment="Remove the bloatware - CJK, accessibility, unused themes and data" remove ibus-anthy ibus-anthy-python anthy-unicode ibus-chewing libchewing ibus-hangul libhangul ibus-libpinyin libpinyin-data ibus-m17n ibus-typing-booster cldr-emoji-annotation speech-dispatcher espeak-ng flite paper-icon-theme libmateweather-data unicode-ucd
 
+# Workaround: bloat removal drops gcr3 as an unused dependency, but Cinnamon needs its Gcr-3 typelib at runtime
+dnf -y --comment="Reinstall gcr3 (Cinnamon runtime dependency)" install gcr3
+
 dnf -y --comment="Install the Audio Tooling" install alsa-utils pulseaudio-utils
 dnf -y --comment="Install the Audio Firmware" install alsa-sof-firmware
 #dnf -y --comment="Install the Most Restricted Audio Video Codecs" install http://rpm.livna.org/livna-release.rpm
