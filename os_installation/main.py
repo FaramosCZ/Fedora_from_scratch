@@ -6,19 +6,35 @@ from lib import *
 # config.py
 from config import *
 
+import re
 from random import choices
 from string import ascii_uppercase, digits
 
-partition_path = []
-if disk.startswith(("sd", "hd", "xvd")):
-    partition_char = ""
-elif disk.startswith(("nvme", "vd", "mmcblk")):
-    partition_char = "p"
+#----------------------------------------
+# DETERMINE LABELS
 
-partition_path = { 1: f"{disk_path}{partition_char}1", 2: f"{disk_path}{partition_char}2"}
+if install_mode == "fresh":
+    partition_path = []
+    if disk.startswith(("sd", "hd", "xvd")):
+        partition_char = ""
+    elif disk.startswith(("nvme", "vd", "mmcblk")):
+        partition_char = "p"
 
-# Generate a random 6-character string
-random_hash = ''.join(choices(ascii_uppercase + digits, k=6))
+    partition_path = { 1: f"{disk_path}{partition_char}1", 2: f"{disk_path}{partition_char}2"}
+
+    # Generate a random 6-character string
+    random_hash = ''.join(choices(ascii_uppercase + digits, k=6))
+
+elif install_mode == "sideload":
+    # Discover the existing label hash from the running system's fstab
+    with open('/etc/fstab') as f:
+        match = re.search(r'LABEL=BTRFS-([A-Za-z0-9]{6})', f.read())
+    if not match:
+        print("\033[1;31mERROR: Could not find BTRFS-XXXXXX label in /etc/fstab. Is this system installed by FEDORA_FROM_SCRATCH?\033[0m")
+        exit(1)
+    random_hash = match.group(1)
+    print(f"\033[1;32mSIDELOAD MODE: Reusing existing labels EFI-{random_hash} / BTRFS-{random_hash}\033[0m")
+    print(f"\033[1;32mSIDELOAD MODE: New subvolume name: {new_subvolume}\033[0m")
 
 #----------------------------------------
 
@@ -35,37 +51,43 @@ shell_cmd("dnf install -y util-linux coreutils btrfs-progs dosfstools")
 #----------------------------------------
 # PREPARE THE DISK LAYOUT
 
-from cleanup import *
+if install_mode == "fresh":
+    from cleanup import *
 
-#----------------------------------------
-# CREATE PARTITIONS
+    #----------------------------------------
+    # CREATE PARTITIONS
 
-# Create modern GPT layout of the partition tables
-shell_cmd(f'echo "label: gpt" | sfdisk {disk_path}')
-shell_cmd('udevadm settle')
+    # Create modern GPT layout of the partition tables
+    shell_cmd(f'echo "label: gpt" | sfdisk {disk_path}')
+    shell_cmd('udevadm settle')
 
-# When UEFI is used, we need to create EFI partition at the beginning of the disk
-#   50 MB should be more than enough in case of Fedora. The required space depends mainly
-#   on the bootloader and its choice which data to store on EFI and which elsewhere.
-# Note: Using 500 MB for firmware update purposes
-partition_efi=";500M;C12A7328-F81F-11D2-BA4B-00A0C93EC93B;"
+    # When UEFI is used, we need to create EFI partition at the beginning of the disk
+    #   50 MB should be more than enough in case of Fedora. The required space depends mainly
+    #   on the bootloader and its choice which data to store on EFI and which elsewhere.
+    # Note: Using 500 MB for firmware update purposes
+    partition_efi=";500M;C12A7328-F81F-11D2-BA4B-00A0C93EC93B;"
 
-# The only other thing on the disk will be a single BTRFS partition covering the rest of the space
-# When size is set bigger than what the real disk size is, maximum left disk space is used instead
-partition_btrfs=";99T;;"
+    # The only other thing on the disk will be a single BTRFS partition covering the rest of the space
+    # When size is set bigger than what the real disk size is, maximum left disk space is used instead
+    partition_btrfs=";99T;;"
 
-# Execute the 'sfdisk' utility
-sfdisk_input=f"{partition_efi}\n{partition_btrfs}"
-shell_cmd(f'echo "{sfdisk_input}" | sfdisk {disk_path}')
+    # Execute the 'sfdisk' utility
+    sfdisk_input=f"{partition_efi}\n{partition_btrfs}"
+    shell_cmd(f'echo "{sfdisk_input}" | sfdisk {disk_path}')
 
-#----------------------------------------
-# CREATE FILESYSTEMS
+    #----------------------------------------
+    # CREATE FILESYSTEMS
 
-# Create filesystem on the EFI partition
-shell_cmd(f'mkfs.vfat -n "EFI-{random_hash}" {partition_path[1]}')
+    # Create filesystem on the EFI partition
+    shell_cmd(f'mkfs.vfat -n "EFI-{random_hash}" {partition_path[1]}')
 
-# Create filesystem on the BTRFS partition
-shell_cmd(f'mkfs.btrfs -f -L "BTRFS-{random_hash}" {partition_path[2]}')
+    # Create filesystem on the BTRFS partition
+    shell_cmd(f'mkfs.btrfs -f -L "BTRFS-{random_hash}" {partition_path[2]}')
+
+elif install_mode == "sideload":
+    # Clean up the mountpoint from a previous failed run (but never touch the running system's disk mounts)
+    shell_cmd(f'umount -R -c {mountpoint_path}/* 2>/dev/null || true', ignore_error_code=True)
+    shell_cmd(f'umount -l {mountpoint_path} 2>/dev/null || true', ignore_error_code=True)
 
 #----------------------------------------
 #----------------------------------------
@@ -75,20 +97,32 @@ shell_cmd(f'mkfs.btrfs -f -L "BTRFS-{random_hash}" {partition_path[2]}')
 # Prepare the mount directory
 shell_cmd(f'mkdir -p {mountpoint_path}')
 
-# Mount the root of the BTRFS there
-shell_cmd(f'mount -t btrfs {partition_path[2]} {mountpoint_path}')
-# Create a subvolume that will act as a root for our filesystem
-shell_cmd(f'btrfs subvolume create {mountpoint_path}/root')
-# Also create a symlink to it, which will be used by GRUB EFI confiuration
-shell_cmd(f'cd {mountpoint_path} ; ln -s "root" "boot"')
-# Mount the new subvolume instead
-shell_cmd(f'umount {mountpoint_path}')
-shell_cmd(f'mount -t btrfs -o noatime,subvol="boot" {partition_path[2]} {mountpoint_path}')
+if install_mode == "fresh":
+    # Mount the root of the BTRFS there
+    shell_cmd(f'mount -t btrfs {partition_path[2]} {mountpoint_path}')
+    # Create a subvolume that will act as a root for our filesystem
+    shell_cmd(f'btrfs subvolume create {mountpoint_path}/root')
+    # Also create a symlink to it, which will be used by GRUB EFI confiuration
+    shell_cmd(f'cd {mountpoint_path} ; ln -s "root" "boot"')
+    # Mount the new subvolume instead
+    shell_cmd(f'umount {mountpoint_path}')
+    shell_cmd(f'mount -t btrfs -o noatime,subvol="boot" {partition_path[2]} {mountpoint_path}')
+
+elif install_mode == "sideload":
+    # Mount the BTRFS root to create a new subvolume alongside the existing ones
+    shell_cmd(f'mount -t btrfs -o subvol=/ LABEL=BTRFS-{random_hash} {mountpoint_path}')
+    shell_cmd(f'btrfs subvolume create {mountpoint_path}/{new_subvolume}')
+    shell_cmd(f'umount {mountpoint_path}')
+    # Mount the new subvolume as the installroot
+    shell_cmd(f'mount -t btrfs -o noatime,subvol={new_subvolume} LABEL=BTRFS-{random_hash} {mountpoint_path}')
 
 # Create a directory for EFI partition mount point
 shell_cmd(f'mkdir -p {mountpoint_path}/boot/efi/')
 # And mount the EFI partition inside
-shell_cmd(f'mount -o noatime {partition_path[1]} {mountpoint_path}/boot/efi/')
+if install_mode == "fresh":
+    shell_cmd(f'mount -o noatime {partition_path[1]} {mountpoint_path}/boot/efi/')
+elif install_mode == "sideload":
+    shell_cmd(f'mount -o noatime LABEL=EFI-{random_hash} {mountpoint_path}/boot/efi/')
 
 fstab_entry=f'''\
 # BASE SYSTEM
@@ -177,10 +211,23 @@ shell_cmd(f'echo {device_name} > {mountpoint_path}/etc/hostname')
 # Copy /etc/default/grub config file inside
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/etc-default-grub {mountpoint_path}/etc/default/grub ')
 
+# In sideload mode, verify the existing EFI trampoline matches what we expect before the GRUB RPM overwrites it
+if install_mode == "sideload":
+    efi_grub_cfg = f'{mountpoint_path}/boot/efi/EFI/fedora/grub.cfg'
+    with open('./GRUB_BTRFS/EFI-grub.cfg') as f:
+        expected_trampoline = f.read().replace('REPLACE-THIS-WITH-DISK-LABEL', f'BTRFS-{random_hash}')
+    with open(efi_grub_cfg) as f:
+        existing_trampoline = f.read()
+    if existing_trampoline != expected_trampoline:
+        print(f"\033[1;31mERROR: Existing EFI trampoline at {efi_grub_cfg} differs from expected content.\033[0m")
+        print(f"\033[1;31m       It may have been manually edited or come from a legacy install.\033[0m")
+        print(f"\033[1;31m       Review it before proceeding. Aborting.\033[0m")
+        exit(1)
+
 # Install GRUB
 shell_cmd(f'dnf --comment="Install GRUB" {common_dnf_arguments} install grub2-efi-x64 grub2-efi-x64-modules shim')
 
-# Copy /etc/default/grub config file inside
+# Restore the EFI trampoline grub.cfg (the grub2-efi-x64 scriptlet overwrites it with its own)
 shell_cmd(f'echo y | cp --remove-destination ./GRUB_BTRFS/EFI-grub.cfg {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
 shell_cmd(f'sed -i "s/REPLACE-THIS-WITH-DISK-LABEL/BTRFS-{random_hash}/g" {mountpoint_path}/boot/efi/EFI/fedora/grub.cfg ')
 # Add backup file since FAT filesystem of the EFI partition does not allow immunity bit protection
@@ -261,4 +308,20 @@ shell_cmd(f'cp -a ./../ {mountpoint_path}/root/fedora_from_scratch')
 
 #----------------------------------------
 
-print('\033[1;32m\n\n\tHEADLESS OS INSTALLED SUCCESSFULLY. PLEASE REBOOT TO IT TO CONTINUE.\n\n\033[0m')
+if install_mode == "fresh":
+    print('\033[1;32m\n\n\tHEADLESS OS INSTALLED SUCCESSFULLY. PLEASE REBOOT TO IT TO CONTINUE.\n\n\033[0m')
+
+elif install_mode == "sideload":
+    print(f'''\033[1;32m
+
+\tSIDELOAD INSTALL COMPLETE. New subvolume "{new_subvolume}" is ready.
+
+\tTo activate it, change the boot symlink:
+\t  mount /mnt/BTRFS-ROOT
+\t  cd /mnt/BTRFS-ROOT
+\t  unlink boot && ln -s {new_subvolume} boot
+\t  reboot
+
+\tTo roll back, change the symlink back to the previous subvolume.
+
+\033[0m''')
