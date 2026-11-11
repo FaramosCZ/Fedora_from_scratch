@@ -21,6 +21,10 @@ chown -R "$USER:$USER" "/home/$USER/.config/terminator"
 su -c "localectl set-locale LANG=en_US.UTF-8" "$USER"
 su -c 'localectl set-x11-keymap cz,us " " , grp:alt_shift_toggle' "$USER"
 
+# Disable automatic update checks in GNOME Software
+su -c "dconf write /org/gnome/software/download-updates false" "$USER"
+su -c "dconf write /org/gnome/software/download-updates-notify false" "$USER"
+
 # Restore pinned apps
 PINNED_APPS_CONFIG_FILE=/home/"$USER"/.config/cinnamon/spices/grouped-window-list@cinnamon.org/2.json
 jq '.["pinned-apps"].default = ["nemo.desktop", "brave-browser.desktop", "terminator.desktop", "com.discordapp.Discord.desktop:flatpak"]' "$PINNED_APPS_CONFIG_FILE" > /tmp/config.json
